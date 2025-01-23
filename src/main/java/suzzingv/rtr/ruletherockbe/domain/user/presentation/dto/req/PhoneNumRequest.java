@@ -12,4 +12,6 @@ public class PhoneNumRequest {
     @NotEmpty
     @Pattern(regexp = "^[0-9]*$")
     private String phoneNum;
+
+    private Boolean isNew;
 }

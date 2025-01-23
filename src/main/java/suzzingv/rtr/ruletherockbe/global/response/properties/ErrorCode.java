@@ -15,6 +15,7 @@ public enum ErrorCode {
     ACCESS_TOKEN_REQUIRED(BAD_REQUEST, "access token이 필요합니다."),
     VALIDATION_ERROR(BAD_REQUEST, "입력값이 유효하지 않습니다."),
     VERIFICATION_CODE_INCORRECT(BAD_REQUEST, "인증 코드가 올바르지 않습니다."),
+    USER_ALREADY_EXISTS(BAD_REQUEST, "이미 존재하는 유저입니다."),
 
     // 401
     SECURITY_UNAUTHORIZED(UNAUTHORIZED, "인증 정보가 유효하지 않습니다"),
@@ -28,7 +29,7 @@ public enum ErrorCode {
     USER_NOT_FOUND(NOT_FOUND, "존재하지 않는 유저입니다."),
     // 500
     SERVER_ERROR(INTERNAL_SERVER_ERROR, "예상치 못한 서버 에러가 발생하였습니다."),
-    SMS_SEND_ERROR(INTERNAL_SERVER_ERROR, "문자 전송 중 에러가 발생했습니다."),;
+    SMS_SEND_ERROR(INTERNAL_SERVER_ERROR, "문자 전송 중 에러가 발생했습니다.");
 
     private final HttpStatus httpStatus;
     private final String message;

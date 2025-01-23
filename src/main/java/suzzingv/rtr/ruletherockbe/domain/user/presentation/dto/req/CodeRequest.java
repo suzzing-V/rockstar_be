@@ -8,4 +8,6 @@ public class CodeRequest {
     private String code;
 
     private String phoneNum;
+
+    private Boolean isNew;
 }
