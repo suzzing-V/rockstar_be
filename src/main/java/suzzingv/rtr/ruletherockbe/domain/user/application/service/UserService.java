@@ -8,8 +8,10 @@ import suzzingv.rtr.ruletherockbe.domain.user.domain.enums.Role;
 import suzzingv.rtr.ruletherockbe.domain.user.exception.UserException;
 import suzzingv.rtr.ruletherockbe.domain.user.infrastructure.UserRepository;
 import suzzingv.rtr.ruletherockbe.domain.user.presentation.dto.req.CodeRequest;
+import suzzingv.rtr.ruletherockbe.domain.user.presentation.dto.req.NicknameRequest;
 import suzzingv.rtr.ruletherockbe.domain.user.presentation.dto.req.PhoneNumRequest;
 import suzzingv.rtr.ruletherockbe.domain.user.presentation.dto.res.LoginResponse;
+import suzzingv.rtr.ruletherockbe.domain.user.presentation.dto.res.UserUpdateResponse;
 import suzzingv.rtr.ruletherockbe.domain.user.presentation.dto.res.VerificationCodeResponse;
 import suzzingv.rtr.ruletherockbe.global.redis.RedisService;
 import suzzingv.rtr.ruletherockbe.global.response.properties.ErrorCode;
@@ -53,6 +55,26 @@ public VerificationCodeResponse sendVerificationCode(PhoneNumRequest request) {
         User user = getUserByIsNew(request);
 
         return LoginResponse.of(accessToken, refreshToken, user.getId());
+    }
+
+    public UserUpdateResponse updateNickname(Long userId, NicknameRequest request) {
+        checkNicknameDuplication(request);
+        log.info("중복확인");
+        User user = findUserById(userId);
+        user.changeNickname(request.getNickname());
+        return UserUpdateResponse.builder()
+                .userId(user.getId())
+                .build();
+    }
+
+    private void checkNicknameDuplication(NicknameRequest request) {
+        userRepository.findByNickName(request.getNickname())
+                .ifPresent(user -> { throw new UserException(ErrorCode.NICKNAME_DUPLICATION);} );
+    }
+
+    private User findUserById(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
     }
 
     private User getUserByIsNew(CodeRequest request) {

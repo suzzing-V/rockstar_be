@@ -16,6 +16,7 @@ public enum ErrorCode {
     VALIDATION_ERROR(BAD_REQUEST, "입력값이 유효하지 않습니다."),
     VERIFICATION_CODE_INCORRECT(BAD_REQUEST, "인증 코드가 올바르지 않습니다."),
     USER_ALREADY_EXISTS(BAD_REQUEST, "이미 존재하는 유저입니다."),
+    NICKNAME_DUPLICATION(BAD_REQUEST, "이미 사용 중인 닉네임입니다."),
 
     // 401
     SECURITY_UNAUTHORIZED(UNAUTHORIZED, "인증 정보가 유효하지 않습니다"),

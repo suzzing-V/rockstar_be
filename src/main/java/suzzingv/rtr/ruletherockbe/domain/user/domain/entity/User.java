@@ -47,6 +47,10 @@ public class User implements UserDetails {
         this.phoneNum = phoneNum;
     }
 
+    public void changeNickname(String nickname) {
+        this.nickName = nickname;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.getText()));
