@@ -11,14 +11,20 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import suzzingv.rtr.ruletherockbe.domain.user.infrastructure.UserRepository;
+import suzzingv.rtr.ruletherockbe.global.redis.RedisService;
+import suzzingv.rtr.ruletherockbe.global.security.jwt.entrypoint.CustomAuthenticationEntryPoint;
+import suzzingv.rtr.ruletherockbe.global.security.jwt.filter.ExceptionHandlerFilter;
+import suzzingv.rtr.ruletherockbe.global.security.jwt.filter.JwtAuthenticationProcessingFilter;
+import suzzingv.rtr.ruletherockbe.global.security.jwt.handler.CustomAccessDeniedHandler;
+import suzzingv.rtr.ruletherockbe.global.security.jwt.service.JwtService;
 
 @Configuration
 @RequiredArgsConstructor
 @EnableWebSecurity
 public class SecurityConfig {
 
-//    private final JwtService jwtService;
-//    private final RedisService redisService;
+    private final JwtService jwtService;
+    private final RedisService redisService;
     private final UserRepository userRepository;
 
     @Bean
@@ -34,36 +40,36 @@ public class SecurityConfig {
                     SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers("/h2-console/**").permitAll()
-                .requestMatchers("/api/v0/user/**").permitAll()
+                .requestMatchers("/api/v0/user/login", "api/v0/user/verification-code").permitAll()
                 .requestMatchers("/api/**").authenticated()
-                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/**").permitAll());
-//            .exceptionHandling(customizer -> customizer
-//                .authenticationEntryPoint(customAuthenticationEntryPoint())
-//                .accessDeniedHandler(customAccessDeniedHandler()))
-//            .addFilterAfter(jwtAuthenticationProcessFilter(), LogoutFilter.class)
-//            .addFilterBefore(exceptionHandlerFilter(), JwtAuthenticationProcessingFilter.class);
+                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/**").permitAll())
+            .exceptionHandling(customizer -> customizer
+                .authenticationEntryPoint(customAuthenticationEntryPoint())
+                .accessDeniedHandler(customAccessDeniedHandler()))
+            .addFilterAfter(jwtAuthenticationProcessFilter(), LogoutFilter.class)
+            .addFilterBefore(exceptionHandlerFilter(), JwtAuthenticationProcessingFilter.class);
         // 필터 순서: Logout filter -> jwtAuthenticationProcessFilter
         return http.build();
     }
 
-//    @Bean
-//    public JwtAuthenticationProcessingFilter jwtAuthenticationProcessFilter() {
-//        return new JwtAuthenticationProcessingFilter(jwtService, redisService, userRepository);
-//    }
-//
-//    @Bean
-//    public ExceptionHandlerFilter exceptionHandlerFilter() {
-//        return new ExceptionHandlerFilter();
-//    }
-//
-//    @Bean
-//    public CustomAuthenticationEntryPoint customAuthenticationEntryPoint() {
-//        return new CustomAuthenticationEntryPoint();
-//    }
-//
-//    @Bean
-//    public CustomAccessDeniedHandler customAccessDeniedHandler() {
-//        return new CustomAccessDeniedHandler();
-//    }
+    @Bean
+    public JwtAuthenticationProcessingFilter jwtAuthenticationProcessFilter() {
+        return new JwtAuthenticationProcessingFilter(jwtService, redisService, userRepository);
+    }
+
+    @Bean
+    public ExceptionHandlerFilter exceptionHandlerFilter() {
+        return new ExceptionHandlerFilter();
+    }
+
+    @Bean
+    public CustomAuthenticationEntryPoint customAuthenticationEntryPoint() {
+        return new CustomAuthenticationEntryPoint();
+    }
+
+    @Bean
+    public CustomAccessDeniedHandler customAccessDeniedHandler() {
+        return new CustomAccessDeniedHandler();
+    }
 }
 

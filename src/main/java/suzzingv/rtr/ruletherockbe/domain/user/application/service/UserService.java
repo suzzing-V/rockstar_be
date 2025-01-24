@@ -1,5 +1,6 @@
 package suzzingv.rtr.ruletherockbe.domain.user.application.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,7 @@ import static suzzingv.rtr.ruletherockbe.domain.user.util.VerificationCodeGenera
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 @Slf4j
 public class UserService {
 
@@ -61,6 +63,7 @@ public VerificationCodeResponse sendVerificationCode(PhoneNumRequest request) {
         checkNicknameDuplication(request);
         log.info("중복확인");
         User user = findUserById(userId);
+        log.info(user.getPhoneNum());
         user.changeNickname(request.getNickname());
         return UserUpdateResponse.builder()
                 .userId(user.getId())
