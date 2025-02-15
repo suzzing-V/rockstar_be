@@ -3,9 +3,6 @@ on:
   push:
     branches:
       - main # main 브랜치의 push 감지
-    paths:
-      - "auth-service/**"
-      - "common-module/**"
 jobs:
   build-and-push:
     runs-on: ubuntu-latest # github actions가 실행될 환경: github가 제공하는 가상 머신에서 실행된다
