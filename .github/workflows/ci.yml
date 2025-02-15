@@ -40,6 +40,26 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
+      - name: Delete existing Docker image (if exists)
+        run: |
+          IMAGE_NAME="${{ secrets.DOCKER_USERNAME }}/${{ matrix.service }}"
+          TOKEN=$(curl -s -H "Content-Type: application/json" -X POST -d '{"username": "'"${{ secrets.DOCKER_USERNAME }}"'", "password": "'"${{ secrets.DOCKER_PASSWORD }}"'"}' https://hub.docker.com/v2/users/login/ | jq -r .token)
+          
+          # Check if image exists
+          EXISTS=$(curl -s -H "Authorization: JWT $TOKEN" "https://hub.docker.com/v2/repositories/$IMAGE_NAME/tags" | jq -r '.count')
+          
+          if [[ "$EXISTS" -gt 0 ]]; then
+            echo "Image $IMAGE_NAME exists. Deleting..."
+            # Get list of all tags and delete them
+            TAGS=$(curl -s -H "Authorization: JWT $TOKEN" "https://hub.docker.com/v2/repositories/$IMAGE_NAME/tags" | jq -r '.results[].name')
+            for TAG in $TAGS; do
+              curl -s -X DELETE -H "Authorization: JWT $TOKEN" "https://hub.docker.com/v2/repositories/$IMAGE_NAME/tags/$TAG/"
+              echo "Deleted tag: $TAG"
+            done
+          else
+            echo "No existing image found for $IMAGE_NAME, proceeding with build..."
+          fi
+
       - name: Docker Build & Push
         run: |
           docker build -t ${{secrets.DOCKER_USERNAME}}/${{ matrix.service }}:${GITHUB_SHA::7} ./${{ matrix.service }}
