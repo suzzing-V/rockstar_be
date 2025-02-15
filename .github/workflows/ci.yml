@@ -43,28 +43,6 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Check and Create DockerHub Repository (if not exists)
-        env:
-          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-        run: |
-          REPO_NAME="${DOCKER_USERNAME}/rtr-${{ matrix.service }}"
-            
-          # DockerHub API에서 리포지토리 존재 여부 확인
-          RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" -u "$DOCKER_USERNAME:$DOCKER_PASSWORD" "https://hub.docker.com/v2/repositories/$REPO_NAME/")
-            
-          # 리포지토리가 없으면 생성
-          if [ "$RESPONSE" -eq 404 ]; then
-            echo "Repository $REPO_NAME not found. Creating..."
-            curl -s -X POST "https://hub.docker.com/v2/repositories/" \
-              -H "Content-Type: application/json" \
-              -u "$DOCKER_USERNAME:$DOCKER_PASSWORD" \
-              -d "{\"name\": \"rtr-${{ matrix.service }}\", \"namespace\": \"$DOCKER_USERNAME\", \"is_private\": false}"
-            echo "Repository created successfully!"
-          else
-            echo "Repository $REPO_NAME already exists."
-          fi
-
       - name: Docker Build & Push
         run: |
           docker build -t ${{secrets.DOCKER_USERNAME}}/rtr-${{ matrix.service }}:${GITHUB_SHA::7} ./${{ matrix.service }}
