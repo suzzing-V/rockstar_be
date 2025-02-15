@@ -1,0 +1,23 @@
+dependencies {
+    //SpringBoot Validation
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    // coolSMS
+    implementation 'net.nurigo:sdk:4.3.0'
+    // FCM
+    implementation 'com.google.firebase:firebase-admin:9.3.0'
+
+    implementation 'junit:junit:4.13.1'
+    // MARIADB
+    runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
+    //REDIS
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    //H2
+    runtimeOnly 'com.h2database:h2'
+    // gcp
+    implementation group: 'org.springframework.cloud', name: 'spring-cloud-gcp-starter', version: '1.2.5.RELEASE'
+    implementation group: 'org.springframework.cloud', name: 'spring-cloud-gcp-storage', version: '1.2.5.RELEASE'
+    // EMAIL
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
+    implementation 'com.sun.mail:jakarta.mail:2.0.1'
+}
