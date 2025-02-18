@@ -16,7 +16,7 @@ jar { enabled = false }
 
 dependencies {
     // Common module
-    implementation project(':common-module')
+    implementation files('../common-module/build/libs/common-module-1.0.0.jar')
     //SpringBoot DATA JPA
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     //SpringBoot Web
