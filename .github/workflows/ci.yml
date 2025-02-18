@@ -54,7 +54,13 @@ jobs:
 
       - name: Execute Gradle build # 변경된 모듈만 빌드
         run: |
+          cd common-module && ./gradlew build && ls ./build/libs
+          
           for folder in $(echo ${{ steps.get_changed.outputs.changed }} | tr ',' '\n'); do
+            if [ "$folder" == "common-module" ]; then
+              continue;
+            fi
+          
             echo "Building in $folder..."
             if [ -f "$folder/Dockerfile" ]; then
               echo "Building gradle in $folder..."
