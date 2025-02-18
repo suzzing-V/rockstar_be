@@ -64,6 +64,8 @@ jobs:
             if [ -f "$folder/Dockerfile" ]; then
               echo "Building gradle in $folder..."
               (cd "$folder" && ./gradlew build &&  ls ./build/libs)
+            else
+              echo "Dockerfile NOT FOUND in $folder"
             fi
           done
 
