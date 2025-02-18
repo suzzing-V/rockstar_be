@@ -51,9 +51,7 @@ jobs:
 
       - name: Execute Gradle build # 변경된 모듈만 빌드
         run: |
-          set -x
-          
-          cd common-module && ./gradlew clean && ./gradlew build && ls ./build/libs && cd ..
+          cd common-module && ./gradlew build && ls ./build/libs && cd ..
           
           for folder in $(echo ${{ steps.get_changed.outputs.changed }} | tr ',' '\n'); do
             if [ "$folder" == "common-module" ]; then
@@ -64,8 +62,6 @@ jobs:
             if [ -f "$folder/Dockerfile" ]; then
               echo "Building gradle in $folder..."
               (cd "$folder" && ./gradlew build &&  ls ./build/libs)
-            else
-              echo "Dockerfile NOT FOUND in $folder"
             fi
           done
 
@@ -82,22 +78,17 @@ jobs:
             echo "Processing module: $module..."
 
             IMAGE_NAME="${{ secrets.DOCKER_USERNAME }}/${module}"
-            TAG="${GITHUB_SHA::7}"
-            TOKEN=$(curl -s -H "Content-Type: application/json" -X POST \
+            TOKEN=$(curl -s -X POST -H "Content-Type: application/json" \
               -d '{"username": "'"${{ secrets.DOCKER_USERNAME }}"'", "password": "'"${{ secrets.DOCKER_PASSWORD }}"'"}' \
               https://hub.docker.com/v2/users/login/ | jq -r .token)
 
-            EXISTS=$(curl -s -H "Authorization: JWT $TOKEN" \
-              "https://hub.docker.com/v2/repositories/$IMAGE_NAME/tags/$TAG/" | jq -r '.count')
-
-            if [[ "$EXISTS" -gt 0 ]]; then
-              echo "Image $IMAGE_NAME:$TAG exists. Deleting..."
-              curl -s -X DELETE -H "Authorization: JWT $TOKEN" \
-                "https://hub.docker.com/v2/repositories/$IMAGE_NAME/tags/$TAG/"
-              echo "Deleted existing image: $IMAGE_NAME:$TAG"
-            else
-              echo "No existing image found for $IMAGE_NAME:$TAG, proceeding with build..."
-            fi
+            curl -s -X GET -H "Authorization: JWT $TOKEN" \
+              "https://hub.docker.com/v2/repositories/$IMAGE_NAME/tags/" | jq -r '.results[].name' | while read TAG; do
+                echo "Deleting $IMAGE_NAME:$TAG..."
+                curl -s -X DELETE -H "Authorization: JWT $TOKEN" \
+                  "https://hub.docker.com/v2/repositories/$IMAGE_NAME/tags/$TAG/"
+                echo "Deleted: $IMAGE_NAME:$TAG"
+            done
 
             if [ -f "$module/Dockerfile" ]; then
               echo "Building Docker image in $module..."
