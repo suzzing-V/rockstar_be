@@ -2,8 +2,11 @@ package suzzingv.suzzingv.authservice;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.stereotype.Component;
 
-@SpringBootApplication(scanBasePackages = {"suzzingv.suzzingv.common-module"})
+@SpringBootApplication
+@ComponentScan(basePackages = {"suzzingv.suzzingv.authservice", "suzzingv.suzzingv.commonmodule"})
 public class AuthServiceApplication {
 
     public static void main(String[] args) {
