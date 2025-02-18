@@ -17,8 +17,8 @@ repositories {
     mavenCentral()
 }
 
-bootJar { enabled = true } // 공통 모듈은 bootJar 로 패키징 할 필요 없음
-jar { enabled = false }
+bootJar { enabled = false } // 공통 모듈은 bootJar 로 패키징 할 필요 없음
+jar { enabled = true }
 
 dependencies {
     //SpringBoot DATA JPA
