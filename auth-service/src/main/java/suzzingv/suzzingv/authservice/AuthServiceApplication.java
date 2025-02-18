@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 public class AuthServiceApplication {
 
     public static void main(String[] args) {
-        // 변경 테스트 2
+        // 변경 테스트 3
         SpringApplication.run(AuthServiceApplication.class, args);
     }
 

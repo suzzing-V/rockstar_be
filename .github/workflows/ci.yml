@@ -51,6 +51,8 @@ jobs:
 
       - name: Execute Gradle build # 변경된 모듈만 빌드
         run: |
+          set -x
+          
           cd common-module && ./gradlew clean && ./gradlew build && ls ./build/libs
           
           for folder in $(echo ${{ steps.get_changed.outputs.changed }} | tr ',' '\n'); do
