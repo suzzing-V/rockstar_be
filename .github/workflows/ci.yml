@@ -92,8 +92,8 @@ jobs:
 
             if [ -f "$module/Dockerfile" ]; then
               echo "Building Docker image in $module..."
-              docker build -t $IMAGE_NAME:${GITHUB_SHA::7} ./$module
-              docker push $IMAGE_NAME:${GITHUB_SHA::7}
+              docker build -t $IMAGE_NAME:latest ./$module
+              docker push $IMAGE_NAME:latest
             else
               echo "Skipping $module (no Dockerfile found)"
             fi
