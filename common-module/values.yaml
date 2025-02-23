@@ -1,22 +1,22 @@
-# Default values for auth-service.
+# Default values for common-module.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
 # This will set the replicaset count more information can be found here: https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/
-replicaCount: 3
+replicaCount: 1
 
 # This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/
 image:
-  repository: suzzingv/auth-service
+  repository: suzzingv/common-module
   # This sets the pull policy for images.
-  pullPolicy: IfNotPresent # Pod 생성 시 이미지가 로컬에 존재하지 않으면 새로 다운로드
+  pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
   tag: latest
 
 # This is for the secrets for pulling an image from a private repository more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
-imagePullSecrets: [] # 프라이빗 이미지 레지스트리 접근 설정
+imagePullSecrets: []
 # This is to override the chart name.
-nameOverride: "" # 차트 이름 재정의
+nameOverride: ""
 fullnameOverride: ""
 
 # This section builds out the service account more information can be found here: https://kubernetes.io/docs/concepts/security/service-accounts/
@@ -37,7 +37,7 @@ podAnnotations: {}
 # This is for setting Kubernetes Labels to a Pod.
 # For more information checkout: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
 podLabels:
-  app: auth-service
+  app: common-module
 
 podSecurityContext: {}
   # fsGroup: 2000
@@ -59,21 +59,22 @@ service:
 
 # This block is for setting up the ingress for more information can be found here: https://kubernetes.io/docs/concepts/services-networking/ingress/
 ingress:
-  enabled: true
-  className: "nginx"
+  enabled: false
+  className: ""
   annotations: {}
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
   hosts:
-    - paths:
-        - path: /api/v0/user
-          pathType: Prefix
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
   tls: []
   #  - secretName: chart-example-tls
   #    hosts:
   #      - chart-example.local
 
-resources: {} # Pod의 CPU와 메모리 사용량 제한
+resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
   # choice for the user. This also increases chances charts run on environments with little
   # resources, such as Minikube. If you do want to specify resources, uncomment the following
@@ -86,21 +87,21 @@ resources: {} # Pod의 CPU와 메모리 사용량 제한
   #   memory: 128Mi
 
 # This is to setup the liveness and readiness probes more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
-livenessProbe: # 애플리케이션 생존 여부 확인. 실패하면 Pod 재시작
+livenessProbe:
   httpGet:
     path: /
     port: http
-readinessProbe: # 트래픽 받을 준비됐는지 확인. 실패하면 서비스가 Pod에 트래픽 보내지 않음
+readinessProbe:
   httpGet:
     path: /
     port: http
 
 # This section is for setting up autoscaling more information can be found here: https://kubernetes.io/docs/concepts/workloads/autoscaling/
 autoscaling:
-  enabled: true
+  enabled: false
   minReplicas: 1
   maxReplicas: 100
-  targetCPUUtilizationPercentage: 80 # CPU 사용률 80% 도달하면 자동 확장
+  targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80
 
 # Additional volumes on the output Deployment definition.
