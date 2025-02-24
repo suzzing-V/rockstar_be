@@ -59,7 +59,6 @@ jobs:
             echo "common-module changed. Publishing..."
             ./gradlew :common-module:publish
             ls ./common-module/build/libs
-            cd ..
             
             for folder in $(ls -d */ | grep -v 'common-module' | sed 's#/##'); do
               echo "Building in $folder..."
