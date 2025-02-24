@@ -90,10 +90,14 @@ livenessProbe: # 애플리케이션 생존 여부 확인. 실패하면 Pod 재�
   httpGet:
     path: /
     port: http
+  initialDelaySeconds: 60
+  periodSeconds: 15
 readinessProbe: # 트래픽 받을 준비됐는지 확인. 실패하면 서비스가 Pod에 트래픽 보내지 않음
   httpGet:
     path: /
     port: http
+  initialDelaySeconds: 60
+  periodSeconds: 15
 
 # This section is for setting up autoscaling more information can be found here: https://kubernetes.io/docs/concepts/workloads/autoscaling/
 autoscaling:
