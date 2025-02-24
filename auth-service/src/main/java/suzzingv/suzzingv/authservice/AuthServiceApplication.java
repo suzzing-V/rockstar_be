@@ -6,7 +6,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Component;
 
 @SpringBootApplication
-@ComponentScan(basePackages = {"suzzingv.suzzingv.authservice", "suzzingv.suzzingv.commonmodule"})
+@ComponentScan(basePackages = {"suzzingv.suzzingv.commonmodule", "suzzingv.suzzingv.authservice"})
 public class AuthServiceApplication {
 
     public static void main(String[] args) {

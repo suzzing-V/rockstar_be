@@ -12,8 +12,8 @@ repositories {
     maven {
         url = uri("https://maven.pkg.github.com/suzzingV/Rule-the-Rock-BE")
         credentials {
-            username = System.getenv("GITHUB_USERNAME")
-            password = System.getenv("GITHUB_TOKEN")
+            username = project.findProperty("gpr.user") ?: System.getenv("GITHUB_USERNAME")
+            password = project.findProperty("gpr.key") ?: System.getenv("GITHUB_TOKEN")
         }
     }
 }
@@ -57,4 +57,11 @@ dependencies {
     //H2
     runtimeOnly 'com.h2database:h2'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
+}
+
+tasks.register('printEnv') {
+    doLast {
+        println "GITHUB_USERNAME: ${System.getenv('GITHUB_USERNAME')}"
+        println "GITHUB_TOKEN: ${System.getenv('GITHUB_TOKEN')}"
+    }
 }
