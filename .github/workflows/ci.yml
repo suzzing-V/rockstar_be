@@ -57,6 +57,7 @@ jobs:
           if echo ${{ steps.get_changed.outputs.changed }} | grep -q "common-module"; then
             echo "common-module changed. Publishing..."
             cd common-module
+            chmod +x ./gradlew
             ./gradlew publish
             ls ./build/libs
             cd ..
@@ -64,7 +65,7 @@ jobs:
             for folder in $(ls -d */ | grep -v 'common-module' | sed 's#/##'); do
               echo "Building in $folder..."
               if [ -f "$folder/Dockerfile" ]; then
-                (cd "$folder" && ./gradlew clean build && ls ./build/libs)
+                (cd "$folder" && chmod +x ./gradlew && ./gradlew clean build && ls ./build/libs)
               fi
             done
           else
@@ -76,7 +77,7 @@ jobs:
               echo "Building in $folder..."
               if [ -f "$folder/Dockerfile" ]; then
                 echo "Building gradle in $folder..."
-                (cd "$folder" && ./gradlew build &&  ls ./build/libs)
+                (cd "$folder" && chmod +x ./gradlew && ./gradlew build &&  ls ./build/libs)
               fi
             done
           fi
