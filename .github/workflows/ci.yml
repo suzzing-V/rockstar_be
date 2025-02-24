@@ -38,7 +38,7 @@ jobs:
         uses: Stockopedia/action-get-changed-files@v1 # 변경된 파일 감지 액션
         id: get_changed # get_changed에 쉼표로 구분된 형태로 변화된 모듈 저장
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }} # github api 인증(변경된 파일 목록 가져오기 위해 필요)
+          github-token: ${{ secrets.GH_TOKEN }} # github api 인증(변경된 파일 목록 가져오기 위해 필요)
           base: "${{ env.base_commit }}"
           ignore: |
             "**/.github/**"
@@ -50,6 +50,9 @@ jobs:
         run: echo ${{ steps.get_changed.outputs.changed }}
 
       - name: Execute Gradle build # common-module 변경 시 전체 서비스 재빌드. 아니면 변경된 서비스만 빌드
+        env:
+          GITHUB_USERNAME: ${{ secrets.GH_USERNAME }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
           if echo ${{ steps.get_changed.outputs.changed }} | grep -q "common-module"; then
             echo "common-module changed. Publishing..."
