@@ -63,7 +63,7 @@ jobs:
             for folder in $(ls -d */ | grep -v 'common-module' | sed 's#/##'); do
               echo "Building in $folder..."
               if [ -f "$folder/Dockerfile" ]; then
-                (./gradlew :$folder:build && ls ./build/libs)
+                (./gradlew :$folder:build && ls ./$folder/build/libs)
               fi
             done
           else
