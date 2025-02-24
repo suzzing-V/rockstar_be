@@ -87,6 +87,8 @@ jobs:
 
       - name: Build and push Docker images # 변경된 모듈의 기존 이미지 존재 시 삭제 후 빌드
         run: |
+          IFS=',' read -ra MODULES <<< "${{ steps.get_changed.outputs.changed }}"
+          for module in "${MODULES[@]}"; do
             if [ -f "$module/Dockerfile" ]; then
               echo "Building Docker image in $module..."
               docker buildx build --platform linux/amd64 -t $IMAGE_NAME:latest ./$module --push
