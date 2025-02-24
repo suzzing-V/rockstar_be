@@ -12,6 +12,9 @@ jobs:
         with:
           fetch-depth: 0 # 전체 Git 히스토리 가져옴
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
       - name: Set up JDK 17 # 자바 설치
         uses: actions/setup-java@v2
         with:
@@ -103,7 +106,7 @@ jobs:
 
             if [ -f "$module/Dockerfile" ]; then
               echo "Building Docker image in $module..."
-              docker build -t $IMAGE_NAME:latest ./$module
+              docker buildx build --platform linux/amd64 -t $IMAGE_NAME:latest ./$module
               docker push $IMAGE_NAME:latest
             else
               echo "Skipping $module (no Dockerfile found)"
