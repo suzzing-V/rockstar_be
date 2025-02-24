@@ -9,7 +9,7 @@ replicaCount: 3
 image:
   repository: suzzingv/auth-service
   # This sets the pull policy for images.
-  pullPolicy: IfNotPresent # Pod 생성 시 이미지가 로컬에 존재하지 않으면 새로 다운로드
+  pullPolicy: Always # Pod 생성 시 이미지가 로컬에 존재하지 않으면 새로 다운로드
   # Overrides the image tag whose default is the chart appVersion.
   tag: latest
 
@@ -124,7 +124,7 @@ volumeMounts:
 
 env:
   - name: SPRING_CONFIG_LOCATION
-    value: "classpath:/application.yml,/app/config/application.yml,/app/config/application-prod.yml"
+    value: "/app/config/application.yml,/app/config/application-prod.yml"
 
 nodeSelector: {}
 
