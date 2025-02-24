@@ -88,21 +88,6 @@ jobs:
       - name: Build and push Docker images # 변경된 모듈의 기존 이미지 존재 시 삭제 후 빌드
         run: |
           IFS=',' read -ra MODULES <<< "${{ steps.get_changed.outputs.changed }}"
-          for module in "${MODULES[@]}"; do
-            echo "Processing module: $module..."
-
-            IMAGE_NAME="${{ secrets.DOCKER_USERNAME }}/${module}"
-            TOKEN=$(curl -s -X POST -H "Content-Type: application/json" \
-              -d '{"username": "'"${{ secrets.DOCKER_USERNAME }}"'", "password": "'"${{ secrets.DOCKER_PASSWORD }}"'"}' \
-              https://hub.docker.com/v2/users/login/ | jq -r .token)
-
-            curl -s -X GET -H "Authorization: JWT $TOKEN" \
-              "https://hub.docker.com/v2/repositories/$IMAGE_NAME/tags/" | jq -r '.results[].name' | while read TAG; do
-                echo "Deleting $IMAGE_NAME:$TAG..."
-                curl -s -X DELETE -H "Authorization: JWT $TOKEN" \
-                  "https://hub.docker.com/v2/repositories/$IMAGE_NAME/tags/$TAG/"
-                echo "Deleted: $IMAGE_NAME:$TAG"
-            done
 
             if [ -f "$module/Dockerfile" ]; then
               echo "Building Docker image in $module..."
