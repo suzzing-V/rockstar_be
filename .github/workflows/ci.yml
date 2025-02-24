@@ -49,21 +49,34 @@ jobs:
       - name: Echo changed files
         run: echo ${{ steps.get_changed.outputs.changed }}
 
-      - name: Execute Gradle build # 변경된 모듈만 빌드
+      - name: Execute Gradle build # common-module 변경 시 전체 서비스 재빌드. 아니면 변경된 서비스만 빌드
         run: |
-          cd common-module && ./gradlew build && ls ./build/libs && cd ..
+          if echo ${{ steps.get_changed.outputs.changed }} | grep -q "common-module"; then
+            echo "common-module changed. Publishing..."
+            cd common-module
+            ./gradlew publish
+            ls ./build/libs
+            cd ..
+            
+            for folder in $(ls -d */ | grep -v 'common-module' | sed 's#/##'); do
+              echo "Building in $folder..."
+              if [ -f "$folder/Dockerfile" ]; then
+                (cd "$folder" && ./gradlew clean build && ls ./build/libs)
+              fi
+            done
+          else
+            for folder in $(echo ${{ steps.get_changed.outputs.changed }} | tr ',' '\n'); do
+              if [ "$folder" == "common-module" ]; then
+                continue;
+              fi 
           
-          for folder in $(echo ${{ steps.get_changed.outputs.changed }} | tr ',' '\n'); do
-            if [ "$folder" == "common-module" ]; then
-              continue;
-            fi
-          
-            echo "Building in $folder..."
-            if [ -f "$folder/Dockerfile" ]; then
-              echo "Building gradle in $folder..."
-              (cd "$folder" && ./gradlew build &&  ls ./build/libs)
-            fi
-          done
+              echo "Building in $folder..."
+              if [ -f "$folder/Dockerfile" ]; then
+                echo "Building gradle in $folder..."
+                (cd "$folder" && ./gradlew build &&  ls ./build/libs)
+              fi
+            done
+          fi
 
       - name: Login to DockerHub
         uses: docker/login-action@v2
