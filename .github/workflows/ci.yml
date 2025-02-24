@@ -89,6 +89,9 @@ jobs:
         run: |
           IFS=',' read -ra MODULES <<< "${{ steps.get_changed.outputs.changed }}"
           for module in "${MODULES[@]}"; do
+            echo "Processing module: $module..."
+
+            IMAGE_NAME="${{ secrets.DOCKER_USERNAME }}/${module}"
             if [ -f "$module/Dockerfile" ]; then
               echo "Building Docker image in $module..."
               docker buildx build --platform linux/amd64 -t $IMAGE_NAME:latest ./$module --push
