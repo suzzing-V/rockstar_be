@@ -18,8 +18,8 @@ publishing {
         maven {
             url = uri("https://maven.pkg.github.com/suzzingV/Rule-the-Rock-BE")
             credentials {
-                username = System.getProperty("GITHUB_USERNAME") ?: System.getenv("GITHUB_USERNAME")
-                password = System.getProperty("GITHUB_TOKEN") ?: System.getenv("GITHUB_TOKEN")
+                username = System.getenv("GITHUB_USERNAME")
+                password = System.getenv("GITHUB_TOKEN")
             }
         }
     }
