@@ -89,14 +89,14 @@ resources: {} # Pod의 CPU와 메모리 사용량 제한
 livenessProbe: # 애플리케이션 생존 여부 확인. 실패하면 Pod 재시작
   httpGet:
     path: /
-    port: 8080
-  initialDelaySeconds: 60
+    port: http
+  initialDelaySeconds: 90
   periodSeconds: 15
 readinessProbe: # 트래픽 받을 준비됐는지 확인. 실패하면 서비스가 Pod에 트래픽 보내지 않음
   httpGet:
     path: /
-    port: 8080
-  initialDelaySeconds: 60
+    port: http
+  initialDelaySeconds: 90
   periodSeconds: 15
 
 # This section is for setting up autoscaling more information can be found here: https://kubernetes.io/docs/concepts/workloads/autoscaling/
