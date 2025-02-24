@@ -74,7 +74,7 @@ jobs:
               echo "Building in $folder..."
               if [ -f "$folder/Dockerfile" ]; then
                 echo "Building gradle in $folder..."
-                (./gradlew :$folder:build &&  ls ./build/libs)
+                (./gradlew :$folder:build &&  ls ./$folder/build/libs)
               fi
             done
           fi
