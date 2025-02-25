@@ -94,8 +94,25 @@ jobs:
             IMAGE_NAME="${{ secrets.DOCKER_USERNAME }}/${module}"
             if [ -f "$module/Dockerfile" ]; then
               echo "Building Docker image in $module..."
-              docker buildx build --platform linux/amd64 -t $IMAGE_NAME:latest ./$module --push
+              docker buildx build --platform linux/amd64 -t $IMAGE_NAME:${{ github.sha }} ./$module --push
             else
               echo "Skipping $module (no Dockerfile found)"
             fi
           done
+          
+      - name: Checkout deployment repository
+        uses: actions/checkout@v4
+        with:
+          repository: suzzingV/Rule-the-Rock-Devops  # 배포 전용 저장소
+          token: ${{ secrets.GH_TOKEN }}
+
+      - name: Update Helm Chart values.yaml
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+          sed -i 's/tag: .*/tag: "${{ github.sha }}"/' helm/auth-service/values.yaml
+
+          git add helm/auth-service/values.yaml
+          git commit -m "Update auth-service image tag to ${{ github.sha }}"
+          git push origin main
