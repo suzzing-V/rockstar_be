@@ -111,8 +111,16 @@ jobs:
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
 
-          sed -i 's/tag: .*/tag: "${{ github.sha }}"/' helm/${module}/values.yaml
+          IFS=',' read -ra MODULES <<< "${{ steps.get_changed.outputs.changed }}"
+          for module in "${MODULES[@]}"; do
+            if [[ "$module" == "common-module" ]]; then
+              echo "Skipping module: $module"
+              continue
+            fi
+            echo "Processing module: $module..."
+            sed -i 's/tag: .*/tag: "${{ github.sha }}"/' helm/${module}/values.yaml
 
-          git add helm/${module}/values.yaml
-          git commit -m "Update ${module} image tag to ${{ github.sha }}"
-          git push origin main
+            git add helm/${module}/values.yaml
+            git commit -m "Update ${module} image tag to ${{ github.sha }}"
+            git push origin main
+          done
