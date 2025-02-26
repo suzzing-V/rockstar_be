@@ -111,8 +111,8 @@ jobs:
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
 
-          sed -i 's/tag: .*/tag: "${{ github.sha }}"/' helm/auth-service/values.yaml
+          sed -i 's/tag: .*/tag: "${{ github.sha }}"/' helm/${module}/values.yaml
 
-          git add helm/auth-service/values.yaml
-          git commit -m "Update auth-service image tag to ${{ github.sha }}"
+          git add helm/${module}/values.yaml
+          git commit -m "Update ${module} image tag to ${{ github.sha }}"
           git push origin main
