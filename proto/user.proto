@@ -1,0 +1,16 @@
+syntax = "proto3"; // 프로토콜 버전 정의
+
+option java_package = "suzzingv.suzzingv.grpc";
+option java_outer_classname = "UserProto";
+
+service UserService {
+  rpc IsExist(UserFindRequest) returns (UserExistResponse);
+}
+
+message UserFindRequest {
+  int64 id = 1;
+}
+
+message UserExistResponse {
+  bool isExist = 1;
+}
