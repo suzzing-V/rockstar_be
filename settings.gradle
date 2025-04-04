@@ -2,3 +2,4 @@ rootProject.name = 'RuleTheRock-BE'
 
 include 'common-module'
 include 'auth-service'
+include 'band-service'
