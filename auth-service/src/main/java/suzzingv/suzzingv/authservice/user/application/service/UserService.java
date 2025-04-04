@@ -74,7 +74,7 @@ public VerificationCodeResponse sendVerificationCode(PhoneNumRequest request) {
                 .ifPresent(user -> { throw new UserException(ErrorCode.NICKNAME_DUPLICATION);} );
     }
 
-    private User findUserById(Long userId) {
+    public User findUserById(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
     }
