@@ -45,7 +45,6 @@ public class BandService {
             userGrpcClinent.isUserExist(userId);
         } catch (StatusRuntimeException e) {
             Status.Code code = e.getStatus().getCode();
-            log.info("status: " + e.getMessage());
             if (Objects.requireNonNull(code) == Status.Code.NOT_FOUND) {
                 throw new BandException(ErrorCode.USER_NOT_FOUND);
             }

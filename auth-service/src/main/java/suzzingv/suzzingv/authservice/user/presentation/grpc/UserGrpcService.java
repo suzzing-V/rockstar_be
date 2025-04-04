@@ -12,7 +12,6 @@ import suzzingv.suzzingv.grpc.UserServiceGrpc;
 
 @RequiredArgsConstructor
 @GrpcService
-@Slf4j
 public class UserGrpcService extends UserServiceGrpc.UserServiceImplBase {
 
     private final UserService userService;
