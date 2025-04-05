@@ -1,7 +1,6 @@
 package suzzingv.suzzingv.bandservice.band.presentation.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import suzzingv.suzzingv.bandservice.band.application.service.BandService;

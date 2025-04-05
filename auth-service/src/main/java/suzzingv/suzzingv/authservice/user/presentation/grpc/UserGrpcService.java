@@ -2,7 +2,6 @@ package suzzingv.suzzingv.authservice.user.presentation.grpc;
 
 import io.grpc.stub.StreamObserver;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.server.service.GrpcService;
 import suzzingv.suzzingv.authservice.user.application.service.UserService;
 import suzzingv.suzzingv.authservice.user.exception.UserException;
