@@ -13,6 +13,10 @@ import suzzingv.suzzingv.rtr.domain.band.exception.BandException;
 import suzzingv.suzzingv.rtr.domain.band.infrastructure.BandRepository;
 
 import java.util.Objects;
+
+import suzzingv.suzzingv.rtr.domain.user.domain.entity.User;
+import suzzingv.suzzingv.rtr.domain.user.exception.UserException;
+import suzzingv.suzzingv.rtr.domain.user.infrastructure.UserRepository;
 import suzzingv.suzzingv.rtr.global.response.properties.ErrorCode;
 
 @Service
@@ -22,9 +26,10 @@ import suzzingv.suzzingv.rtr.global.response.properties.ErrorCode;
 public class BandService {
 
     private final BandRepository bandRepository;
+    private final UserRepository userRepository;
 
     public BandResponse createBand(Long userId, BandRequest request) {
-        isUserExist(userId);
+        findUserById(userId);
         Band band = Band.builder()
                 .leaderId(userId)
                 .name(request.getName())
@@ -38,14 +43,8 @@ public class BandService {
                 .build();
     }
 
-    private void isUserExist(Long userId) {
-//        try {
-//            userGrpcClinent.isUserExist(userId);
-//        } catch (StatusRuntimeException e) {
-//            Status.Code code = e.getStatus().getCode();
-//            if (Objects.requireNonNull(code) == Status.Code.NOT_FOUND) {
-//                throw new BandException(ErrorCode.USER_NOT_FOUND);
-//            }
-//        }
+    private User findUserById(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
     }
 }
