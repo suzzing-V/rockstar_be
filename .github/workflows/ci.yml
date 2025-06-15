@@ -1,127 +1,52 @@
-name: ci
+name: CI
 on:
   push:
     branches:
-      - main # main 브랜치의 push 감지
+      - main
 jobs:
   build-and-push:
-    runs-on: ubuntu-latest # github actions가 실행될 환경: github가 제공하는 가상 머신에서 실행된다
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repository # Github actions 실행 환경에 git clone으로 현재 리포지토리의 코드 가져오기
+      - name: Checkout
         uses: actions/checkout@v2
-        with:
-          fetch-depth: 0 # 전체 Git 히스토리 가져옴
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-
-      - name: Set up JDK 17 # 자바 설치
+      - name: Set up JDK 17
         uses: actions/setup-java@v2
         with:
           java-version: '17'
-          distribution: 'temurin' # 배포판 지정
-
-      - name: Gradle Caching # 빌드 속도 향상을 위한 캐시 설정
-        uses: actions/cache@v4 # Github actions에서 캐시를 저장하고 복원하는 기능. 이전에 저장된 캐시를 복원해 빌드 속도 향상
+          distribution: 'temurin'
+      - name: Gradle Caching
+        uses: actions/cache@v4
         with:
-          path: | # 캐시 경로 지정 # 그래들이 다운로드한 라이브러리 및 빌드 캐시 / 그래들 래퍼 바이너리와 설정 파일
-            ./${{ matrix.service }}/.gradle/caches
-            ./${{ matrix.service }}/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('./**/*.gradle*', './**gradle-wrapper.properties')}} # 캐시 키 지정. build.gradle, gradle-wrapper.properties 등의 해시값을 기반으로 한 고유 값으로 키를 지정해 동일한 키가 존재하면 기존 캐시를 복원함. 변경되면 새로운 캐시 생성
-          restore-keys: | # GitHub Actions가 실행될 때 캐시를 찾을 수 없으면, 유사한 캐시를 찾아 복원하도록 설정하는 옵션.
+          path: |
+            ./.gradle/caches
+            ./.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('./**/*.gradle*', './**gradle-wrapper.properties')}}
+          restore-keys: |
             ${{ runner.os }}-gradle-
-
-      - name: Find merge base # git merge-base를 사용해 현재 main 브랜치와 원격 main 브랜치의 공통 조상 찾음. 변경사항 감지할 때 BASE_COMMIT을 기준으로 사용. # github actions 환경 변수에 공통 조상 저장
-        run: |
-          BASE_COMMIT=$(git merge-base main origin/main)
-          echo "Comparing with: $BASE_COMMIT"
-          echo "base_commit=$BASE_COMMIT" >> $GITHUB_ENV
-
-      - name: Find changed files (compare with last merge base) # 마지막 공통 커밋 이후 변경사항 확인
-        uses: Stockopedia/action-get-changed-files@v1 # 변경된 파일 감지 액션
-        id: get_changed # get_changed에 쉼표로 구분된 형태로 변화된 모듈 저장
-        with:
-          github-token: ${{ secrets.GH_TOKEN }} # github api 인증(변경된 파일 목록 가져오기 위해 필요)
-          base: "${{ env.base_commit }}"
-          ignore: |
-            "**/.github/**"
-            "!**/.github/workflows/ci.yml"
-          foldersOnly: true # 폴더 (모듈) 단위로 감지
-          format: csv # 결과를 csv(쉽표로 구분된 문자열) 형식으로 출력
-
-      - name: Echo changed files
-        run: echo ${{ steps.get_changed.outputs.changed }}
-
-      - name: Execute Gradle build # common-module 변경 시 전체 서비스 재빌드. 아니면 변경된 서비스만 빌드
-        env:
-          GITHUB_USERNAME: ${{ secrets.GH_USERNAME }}
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+      - name: Build with Gradle
         run: |
           chmod +x ./gradlew
-          if echo ${{ steps.get_changed.outputs.changed }} | grep -q "common-module"; then
-            echo "common-module changed. Publishing..."
-            ./gradlew :common-module:publish
-            ls ./common-module/build/libs
-            
-            for folder in $(ls -d */ | grep -v 'common-module' | sed 's#/##'); do
-              echo "Building in $folder..."
-              if [ -f "$folder/Dockerfile" ]; then
-                (./gradlew :$folder:generateProto && ./gradlew :$folder:build && ls ./$folder/build/libs)
-              fi
-            done
-          else
-            for folder in $(echo ${{ steps.get_changed.outputs.changed }} | tr ',' '\n'); do
-              echo "Building in $folder..."
-              if [ -f "$folder/Dockerfile" ]; then
-                echo "Building gradle in $folder..."
-                (./gradlew :$folder:generateProto && ./gradlew :$folder:build &&  ls ./$folder/build/libs)
-              fi
-            done
-          fi
-
+          ./gradlew build
       - name: Login to DockerHub
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-
-      - name: Build and push Docker images # 변경된 모듈의 기존 이미지 존재 시 삭제 후 빌드
+      - name: Docker Build & Push
         run: |
-          IFS=',' read -ra MODULES <<< "${{ steps.get_changed.outputs.changed }}"
-          for module in "${MODULES[@]}"; do
-            echo "Processing module: $module..."
+          docker build -t ${{secrets.DOCKER_USERNAME}}/rtr-be:${GITHUB_SHA::7} .
+          docker push ${{ secrets.DOCKER_USERNAME }}/rtr-be:${GITHUB_SHA::7}
 
-            IMAGE_NAME="${{ secrets.DOCKER_USERNAME }}/${module}"
-            if [ -f "$module/Dockerfile" ]; then
-              echo "Building Docker image in $module..."
-              docker buildx build --platform linux/amd64 -t $IMAGE_NAME:${{ github.sha }} ./$module --push
-            else
-              echo "Skipping $module (no Dockerfile found)"
-            fi
-          done
-          
-      - name: Checkout deployment repository
-        uses: actions/checkout@v4
+      - name: Deploy to prod
+        uses: appleboy/ssh-action@master
+        id: deploy-prod
         with:
-          repository: suzzingV/Rule-the-Rock-Devops  # 배포 전용 저장소
-          token: ${{ secrets.GH_TOKEN }}
-
-      - name: Update Helm Chart values.yaml
-        run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
-
-          IFS=',' read -ra MODULES <<< "${{ steps.get_changed.outputs.changed }}"
-          for module in "${MODULES[@]}"; do
-            if [ -f "$module/Dockerfile" ]; then
-              echo "Processing module: $module..."
-              sed -i 's/tag: .*/tag: "${{ github.sha }}"/' helm/${module}/values.yaml
-
-              git add helm/${module}/values.yaml
-              git commit -m "Update ${module} image tag to ${{ github.sha }}"
-              git push origin main
-            else
-              echo "Skipping module: $module"
-              continue
-            fi
-          done
+          host: ${{ secrets.HOST_PROD }}
+          username: suzzingv
+          key: ${{ secrets.PRIVATE_KEY }}
+          envs: GITHUB_SHA
+          script: |
+            sudo docker pull ${{secrets.DOCKER_USERNAME}}/rtr-be:${GITHUB_SHA::7}
+            sudo docker rm -f rtr-api-server
+            sudo docker run -d --network suzzingv_app-network --name rtr-api-server  -v ~/api_config:/app/config/ -p 8080:8080 -p 443:443 ${{secrets.DOCKER_USERNAME}}/rtr-be:${GITHUB_SHA::7}
+            sudo docker image prune -af
