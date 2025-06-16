@@ -24,10 +24,13 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
+      - name: Ensure resources directory exists
+        run: mkdir -p src/main/resources
+
       - name: Create application.yml from secret
         run: |
           echo "${{ secrets.APPLICATION }}" > src/main/resources/application.yml
-          echo "${{ secrets.APPLICATION_PROD }}" > src/main/resources/application-prod.yml
+          echo "${{ secrets.APPLICATION_PROD }}" > src/main/resources/application-dev.yml
 
       - name: Build with Gradle
         run: |
