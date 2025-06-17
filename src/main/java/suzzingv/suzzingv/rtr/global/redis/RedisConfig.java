@@ -18,7 +18,7 @@ public class RedisConfig {
     @Value("${spring.data.redis.cluster.nodes}")
     private List<String> clusterNodes;
 
-    @Value("${spring.data.redis.password:}")
+    @Value("${spring.data.redis.password}")
     private String password;
 
     @Bean
