@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisClusterConfiguration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
+import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericToStringSerializer;
@@ -16,18 +17,18 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 public class RedisConfig {
 
     @Value("${spring.data.redis.cluster.nodes}")
-    private List<String> clusterNodes;
+    private String clusterNodes;
 
     @Value("${spring.data.redis.password}")
     private String password;
 
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
-        RedisClusterConfiguration clusterConfig = new RedisClusterConfiguration(clusterNodes);
-        if (!password.isEmpty()) {
-            clusterConfig.setPassword(password);
-        }
-        return new LettuceConnectionFactory(clusterConfig);
+        RedisClusterConfiguration clusterConfiguration = new RedisClusterConfiguration(List.of(clusterNodes));
+        LettuceClientConfiguration clientConfig = LettuceClientConfiguration.builder()
+            .useSsl() // 반드시 필요
+            .build();
+        return new LettuceConnectionFactory(clusterConfiguration, clientConfig);
     }
 
     // serializer 설정으로 redis-cli를 통해 직접 데이터를 조회할 수 있도록 설정
