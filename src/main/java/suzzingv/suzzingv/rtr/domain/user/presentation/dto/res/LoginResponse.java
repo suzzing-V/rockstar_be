@@ -6,15 +6,16 @@ import lombok.Getter;
 @Getter
 @Builder
 public class LoginResponse {
+
     private String accessToken;
     private String refreshToken;
     private Long userId;
 
     public static LoginResponse of(String accessToken, String refreshToken, Long userId) {
         return LoginResponse.builder()
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .userId(userId)
-                .build();
+            .accessToken(accessToken)
+            .refreshToken(refreshToken)
+            .userId(userId)
+            .build();
     }
 }

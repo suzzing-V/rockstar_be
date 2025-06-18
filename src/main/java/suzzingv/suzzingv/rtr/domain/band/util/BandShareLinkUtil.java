@@ -2,11 +2,9 @@ package suzzingv.suzzingv.rtr.domain.band.util;
 
 import java.security.SecureRandom;
 import java.util.Base64;
-import java.util.UUID;
-import org.hashids.Hashids;
-import org.springframework.beans.factory.annotation.Value;
 
 public class BandShareLinkUtil {
+
     private static final String BASE_URL = "https://rtr.com";
 
     public static String generateShareLink() {

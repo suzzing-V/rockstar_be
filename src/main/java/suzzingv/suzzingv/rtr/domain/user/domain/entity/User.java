@@ -1,17 +1,26 @@
 package suzzingv.suzzingv.rtr.domain.user.domain.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.Pattern;
-import lombok.*;
+import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.List;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import suzzingv.suzzingv.rtr.domain.user.domain.enums.Role;
-
-import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.List;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -42,7 +51,7 @@ public class User implements UserDetails {
 
     @Builder
     private User(Role role,
-                 String phoneNum) {
+        String phoneNum) {
         this.role = role;
         this.phoneNum = phoneNum;
     }

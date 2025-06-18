@@ -4,13 +4,17 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import suzzingv.suzzingv.rtr.domain.user.application.service.UserService;
 import suzzingv.suzzingv.rtr.domain.user.domain.entity.User;
-import suzzingv.suzzingv.rtr.domain.user.presentation.dto.req.NicknameRequest;
 import suzzingv.suzzingv.rtr.domain.user.presentation.dto.req.CodeRequest;
-import suzzingv.suzzingv.rtr.domain.user.presentation.dto.res.LoginResponse;
+import suzzingv.suzzingv.rtr.domain.user.presentation.dto.req.NicknameRequest;
 import suzzingv.suzzingv.rtr.domain.user.presentation.dto.req.PhoneNumRequest;
+import suzzingv.suzzingv.rtr.domain.user.presentation.dto.res.LoginResponse;
 import suzzingv.suzzingv.rtr.domain.user.presentation.dto.res.UserUpdateResponse;
 import suzzingv.suzzingv.rtr.domain.user.presentation.dto.res.VerificationCodeResponse;
 
@@ -22,7 +26,8 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/verification-code")
-    public ResponseEntity<VerificationCodeResponse> sendVerificationCode(@Valid @RequestBody PhoneNumRequest request) {
+    public ResponseEntity<VerificationCodeResponse> sendVerificationCode(
+        @Valid @RequestBody PhoneNumRequest request) {
         VerificationCodeResponse response = userService.sendVerificationCode(request);
         return ResponseEntity.ok(response);
     }
@@ -34,7 +39,8 @@ public class UserController {
     }
 
     @PatchMapping("/nickname")
-    public ResponseEntity<UserUpdateResponse> updateNickname(@AuthenticationPrincipal User user, @RequestBody @Valid NicknameRequest request) {
+    public ResponseEntity<UserUpdateResponse> updateNickname(@AuthenticationPrincipal User user,
+        @RequestBody @Valid NicknameRequest request) {
         UserUpdateResponse response = userService.updateNickname(user.getId(), request);
         return ResponseEntity.ok(response);
     }

@@ -1,12 +1,11 @@
 package suzzingv.suzzingv.rtr.domain.user.application.service;
 
 import jakarta.transaction.Transactional;
+import java.time.Duration;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import suzzingv.suzzingv.rtr.global.redis.RedisService;
-import suzzingv.suzzingv.rtr.global.response.properties.ErrorCode;
-import suzzingv.suzzingv.rtr.global.security.jwt.service.JwtService;
 import suzzingv.suzzingv.rtr.domain.user.domain.entity.User;
 import suzzingv.suzzingv.rtr.domain.user.domain.enums.Role;
 import suzzingv.suzzingv.rtr.domain.user.exception.UserException;
@@ -18,9 +17,9 @@ import suzzingv.suzzingv.rtr.domain.user.presentation.dto.res.LoginResponse;
 import suzzingv.suzzingv.rtr.domain.user.presentation.dto.res.UserUpdateResponse;
 import suzzingv.suzzingv.rtr.domain.user.presentation.dto.res.VerificationCodeResponse;
 import suzzingv.suzzingv.rtr.domain.user.util.VerificationCodeGenerator;
-
-import java.time.Duration;
-import java.util.Optional;
+import suzzingv.suzzingv.rtr.global.redis.RedisService;
+import suzzingv.suzzingv.rtr.global.response.properties.ErrorCode;
+import suzzingv.suzzingv.rtr.global.security.jwt.service.JwtService;
 import suzzingv.suzzingv.rtr.global.sms.MessageUtils;
 import suzzingv.suzzingv.rtr.global.sms.SmsSender;
 
@@ -38,14 +37,14 @@ public class UserService {
     private static final String VERIFICATION_PREFIX = "verify_";
     private static final Duration VERIFICATION_DURATION = Duration.ofMinutes(1);
 
-public VerificationCodeResponse sendVerificationCode(PhoneNumRequest request) {
-    checkUserByNew(request);
-    String verificationCode = VerificationCodeGenerator.getCode();
+    public VerificationCodeResponse sendVerificationCode(PhoneNumRequest request) {
+        checkUserByNew(request);
+        String verificationCode = VerificationCodeGenerator.getCode();
 //        sendCode(verificationCode, request.getPhoneNum());
         saveCode(request.getPhoneNum(), verificationCode);
         return VerificationCodeResponse.builder()
-                .code(verificationCode)
-                .build();
+            .code(verificationCode)
+            .build();
     }
 
     public LoginResponse login(CodeRequest request) {
@@ -65,26 +64,28 @@ public VerificationCodeResponse sendVerificationCode(PhoneNumRequest request) {
         log.info(user.getPhoneNum());
         user.changeNickname(request.getNickname());
         return UserUpdateResponse.builder()
-                .userId(user.getId())
-                .build();
+            .userId(user.getId())
+            .build();
     }
 
     private void checkNicknameDuplication(NicknameRequest request) {
         userRepository.findByNickName(request.getNickname())
-                .ifPresent(user -> { throw new UserException(ErrorCode.NICKNAME_DUPLICATION);} );
+            .ifPresent(user -> {
+                throw new UserException(ErrorCode.NICKNAME_DUPLICATION);
+            });
     }
 
     public User findUserById(Long userId) {
         return userRepository.findById(userId)
-                .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
+            .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
     }
 
     private User getUserByIsNew(CodeRequest request) {
-        if(request.getIsNew()) {
+        if (request.getIsNew()) {
             User user = User.builder()
-                    .phoneNum(request.getPhoneNum())
-                    .role(Role.USER)
-                    .build();
+                .phoneNum(request.getPhoneNum())
+                .role(Role.USER)
+                .build();
             return userRepository.save(user);
         } else {
             return getByPhoneNum(request);
@@ -97,18 +98,18 @@ public VerificationCodeResponse sendVerificationCode(PhoneNumRequest request) {
 
     private User findByPhoneNum(String phoneNum) {
         return userRepository.findByPhoneNum(phoneNum)
-                        .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
+            .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
     }
 
     private void checkNewUser(String phoneNum) {
         Optional<User> user = userRepository.findByPhoneNum(phoneNum);
-        if(user.isPresent()) {
+        if (user.isPresent()) {
             throw new UserException(ErrorCode.USER_ALREADY_EXISTS);
         }
     }
 
     private void checkUserByNew(PhoneNumRequest request) {
-        if(request.getIsNew()) {
+        if (request.getIsNew()) {
             checkNewUser(request.getPhoneNum());
         } else {
             findByPhoneNum(request.getPhoneNum());
@@ -117,13 +118,14 @@ public VerificationCodeResponse sendVerificationCode(PhoneNumRequest request) {
 
     private void isCorrectCode(String phoneNum, String code) {
         String savedCode = redisService.getStrValue(VERIFICATION_PREFIX + phoneNum);
-        if(!code.equals(savedCode)) {
+        if (!code.equals(savedCode)) {
             throw new UserException(ErrorCode.VERIFICATION_CODE_INCORRECT);
         }
     }
 
     private void saveCode(String phoneNum, String verificationCode) {
-        redisService.setValue(VERIFICATION_PREFIX + phoneNum, verificationCode, VERIFICATION_DURATION);
+        redisService.setValue(VERIFICATION_PREFIX + phoneNum, verificationCode,
+            VERIFICATION_DURATION);
     }
 
     private String sendCode(String verificationCode, String phoneNum) {
