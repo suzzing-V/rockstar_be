@@ -27,6 +27,9 @@ public class Band {
 
     private String image;
 
+    @Column(nullable = false)
+    private String url;
+
     @Lob
     @Column(columnDefinition = "TEXT")
     private String introduction;
@@ -36,10 +39,11 @@ public class Band {
     private LocalDateTime createdAt;
 
     @Builder
-    private Band(Long leaderId, String name, String image, String introduction) {
+    private Band(Long leaderId, String name, String image, String introduction, String url) {
         this.leaderId = leaderId;
         this.name = name;
         this.image = image;
         this.introduction = introduction;
+        this.url = url;
     }
 }
