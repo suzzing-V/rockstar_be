@@ -8,5 +8,5 @@ import suzzingv.suzzingv.rtr.domain.band.domain.entity.Band;
 @Repository
 public interface BandRepository extends JpaRepository<Band, Long> {
 
-    Optional<Band> findByUrl(String url);
+    Optional<Band> findByInvitationUrl(String invitationUrl);
 }

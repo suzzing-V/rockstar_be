@@ -8,9 +8,9 @@ import suzzingv.suzzingv.rtr.domain.band.domain.entity.Band;
 import suzzingv.suzzingv.rtr.domain.band.exception.BandException;
 import suzzingv.suzzingv.rtr.domain.band.infrastructure.BandRepository;
 import suzzingv.suzzingv.rtr.domain.band.presentation.dto.req.BandRequest;
-import suzzingv.suzzingv.rtr.domain.band.presentation.dto.res.BandIdResponse;
+import suzzingv.suzzingv.rtr.domain.band.presentation.dto.res.BandNameResponse;
 import suzzingv.suzzingv.rtr.domain.band.presentation.dto.res.BandResponse;
-import suzzingv.suzzingv.rtr.domain.band.util.BandShareLinkUtil;
+import suzzingv.suzzingv.rtr.domain.band.util.UrlUtil;
 import suzzingv.suzzingv.rtr.domain.user.domain.entity.User;
 import suzzingv.suzzingv.rtr.domain.user.exception.UserException;
 import suzzingv.suzzingv.rtr.domain.user.infrastructure.UserRepository;
@@ -27,22 +27,33 @@ public class BandService {
 
     public BandResponse createBand(Long userId, BandRequest request) {
         findUserById(userId);
-        String url = BandShareLinkUtil.generateShareLink();
+        String invitationUrl = UrlUtil.generateInvitationUrl();
         Band band = Band.builder()
             .leaderId(userId)
             .name(request.getName())
             .image(request.getImage())
             .introduction(request.getImage())
-            .url(url)
+            .invitationUrl(invitationUrl)
             .build();
         bandRepository.save(band);
 
         return BandResponse.from(band.getId());
     }
 
-    public BandIdResponse getBandUrl(String url) {
-        Band band = findByUrl(url);
-        return BandIdResponse.from(band.getId());
+    public BandNameResponse getInvitationUrl(String url) {
+        Band band = findByInvitationUrl(url);
+        return BandNameResponse.of(band.getId(), band.getName());
+    }
+
+    public BandNameResponse join(Long userId, Long bandId) {
+        Band band = findById(bandId);
+
+        return BandNameResponse.of(bandId, band.getName());
+    }
+
+    private Band findById(Long bandId) {
+        return bandRepository.findById(bandId)
+            .orElseThrow(() -> new BandException(ErrorCode.BAND_NOT_FOUND));
     }
 
     private User findUserById(Long userId) {
@@ -50,8 +61,8 @@ public class BandService {
             .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
     }
 
-    private Band findByUrl(String url) {
-        return bandRepository.findByUrl(url)
+    private Band findByInvitationUrl(String url) {
+        return bandRepository.findByInvitationUrl(url)
             .orElseThrow(() -> new BandException(ErrorCode.BAND_NOT_FOUND));
     }
 }
