@@ -11,6 +11,6 @@ public class BandShareLinkUtil {
         String raw = System.currentTimeMillis() + ":" + new SecureRandom().nextInt();
         String token = Base64.getUrlEncoder().withoutPadding().encodeToString(raw.getBytes());
 
-        return BASE_URL + token;
+        return BASE_URL + "/" + token;
     }
 }
