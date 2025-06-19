@@ -27,6 +27,7 @@ public class BandController {
     public ResponseEntity<BandResponse> createBand(@AuthenticationPrincipal User user,
         @RequestBody BandRequest request) {
         BandResponse response = bandService.createBand(user.getId(), request);
+        bandService.createBandUser(response.getBandId(), user.getId());
         return ResponseEntity.ok(response);
     }
 
