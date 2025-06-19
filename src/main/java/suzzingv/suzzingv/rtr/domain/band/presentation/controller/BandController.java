@@ -36,9 +36,9 @@ public class BandController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/join/{bandId}")
-    public ResponseEntity<BandNameResponse> join(@AuthenticationPrincipal User user, @PathVariable Long bandId) {
-        BandNameResponse response = bandService.join(user.getId(), bandId);
+    @PostMapping("/entry/{bandId}")
+    public ResponseEntity<BandNameResponse> applyForEntry(@AuthenticationPrincipal User user, @PathVariable Long bandId) {
+        BandNameResponse response = bandService.applyForEntry(user.getId(), bandId);
         return ResponseEntity.ok(response);
     }
 }

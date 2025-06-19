@@ -5,8 +5,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import suzzingv.suzzingv.rtr.domain.band.domain.entity.Band;
+import suzzingv.suzzingv.rtr.domain.band.domain.entity.Entry;
 import suzzingv.suzzingv.rtr.domain.band.exception.BandException;
 import suzzingv.suzzingv.rtr.domain.band.infrastructure.BandRepository;
+import suzzingv.suzzingv.rtr.domain.band.infrastructure.EntryRepository;
 import suzzingv.suzzingv.rtr.domain.band.presentation.dto.req.BandRequest;
 import suzzingv.suzzingv.rtr.domain.band.presentation.dto.res.BandNameResponse;
 import suzzingv.suzzingv.rtr.domain.band.presentation.dto.res.BandResponse;
@@ -24,6 +26,7 @@ public class BandService {
 
     private final BandRepository bandRepository;
     private final UserRepository userRepository;
+    private final EntryRepository entryRepository;
 
     public BandResponse createBand(Long userId, BandRequest request) {
         findUserById(userId);
@@ -45,9 +48,15 @@ public class BandService {
         return BandNameResponse.of(band.getId(), band.getName());
     }
 
-    public BandNameResponse join(Long userId, Long bandId) {
+    public BandNameResponse applyForEntry(Long userId, Long bandId) {
         Band band = findById(bandId);
+        findUserById(userId);
 
+        Entry entry = Entry.builder()
+            .bandId(bandId)
+            .userId(userId)
+            .build();
+        entryRepository.save(entry);
         return BandNameResponse.of(bandId, band.getName());
     }
 
