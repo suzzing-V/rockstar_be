@@ -28,7 +28,7 @@ public class Band {
     private String name;
 
     @Column(nullable = false)
-    private Long leaderId;
+    private Long managerId;
 
     private String image;
 
@@ -44,8 +44,8 @@ public class Band {
     private LocalDateTime createdAt;
 
     @Builder
-    private Band(Long leaderId, String name, String image, String introduction, String invitationUrl) {
-        this.leaderId = leaderId;
+    private Band(Long managerId, String name, String image, String introduction, String invitationUrl) {
+        this.managerId = managerId;
         this.name = name;
         this.image = image;
         this.introduction = introduction;

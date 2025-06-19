@@ -25,6 +25,7 @@ public enum ErrorCode {
 
     // 403
     SECURITY_ACCESS_DENIED(HttpStatus.FORBIDDEN, "접근 권한이 없습니다."),
+    MANAGER_REQUIRED(HttpStatus.FORBIDDEN, "매니저 권한이 필요합니다."),
 
     // 404
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 유저입니다."),

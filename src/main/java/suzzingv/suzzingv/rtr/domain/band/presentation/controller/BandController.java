@@ -14,7 +14,10 @@ import suzzingv.suzzingv.rtr.domain.band.presentation.dto.req.BandRequest;
 import suzzingv.suzzingv.rtr.domain.band.presentation.dto.req.BandInvitationUrlRequest;
 import suzzingv.suzzingv.rtr.domain.band.presentation.dto.res.BandNameResponse;
 import suzzingv.suzzingv.rtr.domain.band.presentation.dto.res.BandResponse;
+import suzzingv.suzzingv.rtr.domain.band.presentation.dto.res.EntryApplicationResponse;
 import suzzingv.suzzingv.rtr.domain.user.domain.entity.User;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -40,6 +43,12 @@ public class BandController {
     @PostMapping("/entry/{bandId}")
     public ResponseEntity<BandNameResponse> applyForEntry(@AuthenticationPrincipal User user, @PathVariable Long bandId) {
         BandNameResponse response = bandService.applyForEntry(user.getId(), bandId);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/entry/{bandId}")
+    public ResponseEntity<List<EntryApplicationResponse>> getEntryApplicationList(@AuthenticationPrincipal User user, @PathVariable Long bandId) {
+        List<EntryApplicationResponse> response = bandService.getEntryApplicationList(user.getId(), bandId);
         return ResponseEntity.ok(response);
     }
 }
