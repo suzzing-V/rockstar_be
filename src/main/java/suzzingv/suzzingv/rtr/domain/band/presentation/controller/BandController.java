@@ -54,4 +54,10 @@ public class BandController {
         EntryAcceptResponse response = bandService.acceptEntry(user.getId(), request);
         return ResponseEntity.ok(response);
     }
+
+    @DeleteMapping("/entry")
+    public ResponseEntity<Void> deleteEntry(@AuthenticationPrincipal User user, @RequestBody EntryAcceptRequest request) {
+        bandService.deleteEntry(user.getId(), request);
+        return ResponseEntity.ok().build();
+    }
 }

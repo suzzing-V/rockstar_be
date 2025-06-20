@@ -111,6 +111,14 @@ public class BandService {
         return EntryAcceptResponse.from(userId);
     }
 
+    public void deleteEntry(Long managerId, EntryAcceptRequest request) {
+        Long bandId = request.getBandId();
+        Long userId = request.getUserId();
+
+        isManager(managerId, bandId);
+        entryRepository.deleteByUserIdAndBandId(userId, bandId);
+    }
+
     private void isManager(Long userId, Long managerId) {
         if(!Objects.equals(userId, managerId)) {
             throw new BandException(ErrorCode.MANAGER_REQUIRED);
