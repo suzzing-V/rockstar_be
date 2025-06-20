@@ -12,8 +12,10 @@ import suzzingv.suzzingv.rtr.domain.band.infrastructure.BandRepository;
 import suzzingv.suzzingv.rtr.domain.band.infrastructure.BandUserRepository;
 import suzzingv.suzzingv.rtr.domain.band.infrastructure.EntryRepository;
 import suzzingv.suzzingv.rtr.domain.band.presentation.dto.req.BandRequest;
+import suzzingv.suzzingv.rtr.domain.band.presentation.dto.req.EntryAcceptRequest;
 import suzzingv.suzzingv.rtr.domain.band.presentation.dto.res.BandNameResponse;
 import suzzingv.suzzingv.rtr.domain.band.presentation.dto.res.BandResponse;
+import suzzingv.suzzingv.rtr.domain.band.presentation.dto.res.EntryAcceptResponse;
 import suzzingv.suzzingv.rtr.domain.band.presentation.dto.res.EntryApplicationResponse;
 import suzzingv.suzzingv.rtr.domain.band.util.UrlUtil;
 import suzzingv.suzzingv.rtr.domain.user.domain.entity.User;
@@ -85,10 +87,28 @@ public class BandService {
         List<EntryApplicationResponse> responses = entries.stream()
                 .map(entry -> {
                     User user = findUserById(entry.getUserId());
-                    return EntryApplicationResponse.of(user.getNickName());
+                    return EntryApplicationResponse.of(userId, user.getNickName());
                 })
                 .collect(Collectors.toList());
         return responses;
+    }
+
+    public EntryAcceptResponse acceptEntry(Long managerId, EntryAcceptRequest request) {
+        Long bandId = request.getBandId();
+        Long userId = request.getUserId();
+
+        isManager(managerId, bandId);
+        BandUser bandUser = BandUser.builder()
+                .userId(userId)
+                .bandId(bandId)
+                .build();
+        bandUserRepository.save(bandUser);
+
+        entryRepository.deleteByUserIdAndBandId(userId, bandId);
+
+        // 푸시 큐 구독
+
+        return EntryAcceptResponse.from(userId);
     }
 
     private void isManager(Long userId, Long managerId) {

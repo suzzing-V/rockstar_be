@@ -3,17 +3,14 @@ package suzzingv.suzzingv.rtr.domain.band.presentation.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import suzzingv.suzzingv.rtr.domain.band.application.service.BandService;
 import suzzingv.suzzingv.rtr.domain.band.presentation.dto.req.BandRequest;
 import suzzingv.suzzingv.rtr.domain.band.presentation.dto.req.BandInvitationUrlRequest;
+import suzzingv.suzzingv.rtr.domain.band.presentation.dto.req.EntryAcceptRequest;
 import suzzingv.suzzingv.rtr.domain.band.presentation.dto.res.BandNameResponse;
 import suzzingv.suzzingv.rtr.domain.band.presentation.dto.res.BandResponse;
+import suzzingv.suzzingv.rtr.domain.band.presentation.dto.res.EntryAcceptResponse;
 import suzzingv.suzzingv.rtr.domain.band.presentation.dto.res.EntryApplicationResponse;
 import suzzingv.suzzingv.rtr.domain.user.domain.entity.User;
 
@@ -49,6 +46,12 @@ public class BandController {
     @GetMapping("/entry/{bandId}")
     public ResponseEntity<List<EntryApplicationResponse>> getEntryApplicationList(@AuthenticationPrincipal User user, @PathVariable Long bandId) {
         List<EntryApplicationResponse> response = bandService.getEntryApplicationList(user.getId(), bandId);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/entry/accept")
+    public ResponseEntity<EntryAcceptResponse> acceptEntry(@AuthenticationPrincipal User user, @RequestBody EntryAcceptRequest request) {
+        EntryAcceptResponse response = bandService.acceptEntry(user.getId(), request);
         return ResponseEntity.ok(response);
     }
 }
