@@ -14,6 +14,7 @@ import suzzingv.suzzingv.rtr.domain.user.presentation.dto.req.CodeRequest;
 import suzzingv.suzzingv.rtr.domain.user.presentation.dto.req.NicknameRequest;
 import suzzingv.suzzingv.rtr.domain.user.presentation.dto.req.PhoneNumRequest;
 import suzzingv.suzzingv.rtr.domain.user.presentation.dto.res.LoginResponse;
+import suzzingv.suzzingv.rtr.domain.user.presentation.dto.res.UserInfoResponse;
 import suzzingv.suzzingv.rtr.domain.user.presentation.dto.res.UserUpdateResponse;
 import suzzingv.suzzingv.rtr.domain.user.presentation.dto.res.VerificationCodeResponse;
 import suzzingv.suzzingv.rtr.domain.user.util.VerificationCodeGenerator;
@@ -136,5 +137,11 @@ public class UserService {
             throw new UserException(ErrorCode.SMS_SEND_ERROR);
         }
         return verificationCode;
+    }
+
+    public UserInfoResponse getUserInfo(Long userId) {
+        User user = findUserById(userId);
+
+        return UserInfoResponse.from(user);
     }
 }
