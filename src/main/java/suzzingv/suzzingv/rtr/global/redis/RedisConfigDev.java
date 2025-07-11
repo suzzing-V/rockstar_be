@@ -15,7 +15,8 @@ import org.springframework.data.redis.serializer.GenericToStringSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
-public class RedisConfig {
+@Profile("dev")
+public class RedisConfigDev {
 
     @Value("${spring.data.redis.host}")
     private String host;
@@ -23,16 +24,12 @@ public class RedisConfig {
     @Value("${spring.data.redis.port}")
     private int port;
 
-    @Value("${spring.data.redis.cluster.nodes}")
-    private String clusterNodes;
-
     @Value("${spring.data.redis.password}")
     private String password;
 
 
     @Bean
-    @Profile("dev")
-    public RedisConnectionFactory redisConnectionFactoryDev() {
+    public RedisConnectionFactory redisConnectionFactory() {
         RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
         redisStandaloneConfiguration.setHostName(host);
         redisStandaloneConfiguration.setPort(port);
@@ -43,56 +40,21 @@ public class RedisConfig {
     }
 
     @Bean
-    @Profile("dev")
     public RedisTemplate<String, String> redisTemplate() {
         RedisTemplate<String, String> redisTemplate = new RedisTemplate<>();
         redisTemplate.setKeySerializer(new StringRedisSerializer());
         redisTemplate.setValueSerializer(new StringRedisSerializer());
-        redisTemplate.setConnectionFactory(redisConnectionFactoryDev());
+        redisTemplate.setConnectionFactory(redisConnectionFactory());
 
         return redisTemplate;
     }
 
     @Bean
-    @Profile("dev")
     public RedisTemplate<String, Integer> integerRedisTemplate() {
         RedisTemplate<String, Integer> redisTemplate = new RedisTemplate<>();
         redisTemplate.setKeySerializer(new StringRedisSerializer());
         redisTemplate.setValueSerializer(new GenericToStringSerializer<>(Integer.class));
-        redisTemplate.setConnectionFactory(redisConnectionFactoryDev());
-
-        return redisTemplate;
-    }
-
-    @Bean
-    @Profile("prod")
-    public RedisConnectionFactory redisConnectionFactoryProd() {
-        RedisClusterConfiguration clusterConfiguration = new RedisClusterConfiguration(List.of(clusterNodes));
-        LettuceClientConfiguration clientConfig = LettuceClientConfiguration.builder()
-            .useSsl() // 반드시 필요
-            .build();
-        return new LettuceConnectionFactory(clusterConfiguration, clientConfig);
-    }
-
-    // serializer 설정으로 redis-cli를 통해 직접 데이터를 조회할 수 있도록 설정
-    @Bean
-    @Profile("prod")
-    public RedisTemplate<String, String> redisTemplateProd() {
-        RedisTemplate<String, String> redisTemplate = new RedisTemplate<>();
-        redisTemplate.setKeySerializer(new StringRedisSerializer());
-        redisTemplate.setValueSerializer(new StringRedisSerializer());
-        redisTemplate.setConnectionFactory(redisConnectionFactoryProd());
-
-        return redisTemplate;
-    }
-
-    @Bean
-    @Profile("prod")
-    public RedisTemplate<String, Integer> integerRedisTemplateProd() {
-        RedisTemplate<String, Integer> redisTemplate = new RedisTemplate<>();
-        redisTemplate.setKeySerializer(new StringRedisSerializer());
-        redisTemplate.setValueSerializer(new GenericToStringSerializer<>(Integer.class));
-        redisTemplate.setConnectionFactory(redisConnectionFactoryProd());
+        redisTemplate.setConnectionFactory(redisConnectionFactory());
 
         return redisTemplate;
     }
