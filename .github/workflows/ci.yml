@@ -43,8 +43,8 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
       - name: Docker Build & Push
         run: |
-          docker build -t ${{secrets.DOCKER_USERNAME}}/rtr-be:${GITHUB_SHA::7} .
-          docker push ${{ secrets.DOCKER_USERNAME }}/rtr-be:${GITHUB_SHA::7}
+          docker build -t ${{secrets.DOCKER_USERNAME}}/rockstar-be:${GITHUB_SHA::7} .
+          docker push ${{ secrets.DOCKER_USERNAME }}/rockstar-be:${GITHUB_SHA::7}
 
       - name: Deploy to prod
         uses: appleboy/ssh-action@master
@@ -55,7 +55,7 @@ jobs:
           key: ${{ secrets.PRIVATE_KEY }}
           envs: GITHUB_SHA
           script: |
-            sudo docker pull ${{secrets.DOCKER_USERNAME}}/rtr-be:${GITHUB_SHA::7}
-            sudo docker rm -f rtr-api-server
-            sudo docker run -d --network host --name rtr-api-server  -v ~/api_config:/app/config/ -p 8080:8080 -p 443:443 ${{secrets.DOCKER_USERNAME}}/rtr-be:${GITHUB_SHA::7}
+            sudo docker pull ${{secrets.DOCKER_USERNAME}}/rockstar-be:${GITHUB_SHA::7}
+            sudo docker rm -f rockstar-api-server
+            sudo docker run -d --network host --name rockstar-api-server  -v ~/api_config:/app/config/ -p 8080:8080 -p 443:443 ${{secrets.DOCKER_USERNAME}}/rockstar-be:${GITHUB_SHA::7}
             sudo docker image prune -af
