@@ -60,4 +60,10 @@ public class BandController {
         bandService.deleteEntry(user.getId(), request);
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/user")
+    public ResponseEntity<List<BandNameResponse>> getListByUser(@AuthenticationPrincipal User user) {
+        List<BandNameResponse> response = bandService.getListByUser(user.getId());
+        return ResponseEntity.ok(response);
+    }
 }

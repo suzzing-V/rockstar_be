@@ -25,6 +25,7 @@ import suzzingv.suzzingv.rockstar.global.response.properties.ErrorCode;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -137,5 +138,17 @@ public class BandService {
     private Band findByInvitationUrl(String url) {
         return bandRepository.findByInvitationUrl(url)
             .orElseThrow(() -> new BandException(ErrorCode.BAND_NOT_FOUND));
+    }
+
+    public List<BandNameResponse> getListByUser(Long userId) {
+        List<Long> byUserId = bandUserRepository.findByUserId(userId);
+        List<BandNameResponse> responses = byUserId.stream()
+                .map(bandId -> {
+                    Band band = bandRepository.findById(bandId).get();
+                    return BandNameResponse.of(bandId, band.getName());
+                })
+                .collect(Collectors.toList());
+
+        return responses;
     }
 }
