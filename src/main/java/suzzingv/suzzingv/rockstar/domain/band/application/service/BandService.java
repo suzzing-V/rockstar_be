@@ -141,11 +141,11 @@ public class BandService {
     }
 
     public List<BandNameResponse> getListByUser(Long userId) {
-        List<Long> byUserId = bandUserRepository.findByUserId(userId);
+        List<BandUser> byUserId = bandUserRepository.findByUserId(userId);
         List<BandNameResponse> responses = byUserId.stream()
-                .map(bandId -> {
-                    Band band = bandRepository.findById(bandId).get();
-                    return BandNameResponse.of(bandId, band.getName());
+                .map(bandUser -> {
+                    Band band = bandRepository.findById(bandUser.getBandId()).get();
+                    return BandNameResponse.of(bandUser.getBandId(), band.getName());
                 })
                 .collect(Collectors.toList());
 
