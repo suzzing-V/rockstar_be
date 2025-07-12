@@ -55,7 +55,7 @@ public class UserService {
         jwtService.updateRefreshToken(refreshToken, request.getPhoneNum());
         User user = getUserByIsNew(request);
 
-        return LoginResponse.of(accessToken, refreshToken, user.getId());
+        return LoginResponse.of(accessToken, refreshToken, user.getId(), user.getNickName());
     }
 
     public UserUpdateResponse updateNickname(Long userId, NicknameRequest request) {
