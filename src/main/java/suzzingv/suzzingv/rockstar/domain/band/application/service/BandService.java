@@ -144,7 +144,7 @@ public class BandService {
         List<BandUser> byUserId = bandUserRepository.findByUserId(userId);
         List<BandNameResponse> responses = byUserId.stream()
                 .map(bandUser -> {
-                    Band band = bandRepository.findById(bandUser.getBandId()).get();
+                    Band band = findById(bandUser.getBandId());
                     return BandNameResponse.of(bandUser.getBandId(), band.getName());
                 })
                 .collect(Collectors.toList());

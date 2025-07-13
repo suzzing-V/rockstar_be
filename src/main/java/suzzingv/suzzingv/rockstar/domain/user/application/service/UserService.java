@@ -13,10 +13,7 @@ import suzzingv.suzzingv.rockstar.domain.user.infrastructure.UserRepository;
 import suzzingv.suzzingv.rockstar.domain.user.presentation.dto.req.CodeRequest;
 import suzzingv.suzzingv.rockstar.domain.user.presentation.dto.req.NicknameRequest;
 import suzzingv.suzzingv.rockstar.domain.user.presentation.dto.req.PhoneNumRequest;
-import suzzingv.suzzingv.rockstar.domain.user.presentation.dto.res.LoginResponse;
-import suzzingv.suzzingv.rockstar.domain.user.presentation.dto.res.UserInfoResponse;
-import suzzingv.suzzingv.rockstar.domain.user.presentation.dto.res.UserUpdateResponse;
-import suzzingv.suzzingv.rockstar.domain.user.presentation.dto.res.VerificationCodeResponse;
+import suzzingv.suzzingv.rockstar.domain.user.presentation.dto.res.*;
 import suzzingv.suzzingv.rockstar.domain.user.util.VerificationCodeGenerator;
 import suzzingv.suzzingv.rockstar.global.redis.RedisService;
 import suzzingv.suzzingv.rockstar.global.response.properties.ErrorCode;
@@ -143,5 +140,15 @@ public class UserService {
         User user = findUserById(userId);
 
         return UserInfoResponse.from(user);
+    }
+
+    public TokenResponse reissueToken(String refreshToken) {
+        String phoneNum = jwtService.checkRefreshToken(refreshToken);
+
+        String newAccessToken = jwtService.createAccessToken(phoneNum);
+        String newRefreshToken = jwtService.reissueRefreshToken(refreshToken, phoneNum);
+
+        return TokenResponse.of(newAccessToken, newRefreshToken);
+        // accessToken 만료 -> refreshToken 보내 토큰 재발급 -> refreshToken도 만료됐으면 다시 로그인해야됨
     }
 }
