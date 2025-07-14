@@ -50,6 +50,12 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/band/{bandId}")
+    public ResponseEntity<UserInfoByBandResponse> getUserInfoByBand(@AuthenticationPrincipal User user, @PathVariable Long bandId) {
+        UserInfoByBandResponse response = userService.getUserInfoByBand(user.getId(), bandId);
+        return ResponseEntity.ok(response);
+    }
+
     @PostMapping("/reissue")
     public ResponseEntity<TokenResponse> reissueToken(HttpServletRequest request, @AuthenticationPrincipal User user) {
         String refreshToken = jwtService.extractRefreshToken(request)

@@ -6,6 +6,9 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import suzzingv.suzzingv.rockstar.domain.band.application.service.BandService;
+import suzzingv.suzzingv.rockstar.domain.band.domain.entity.Band;
+import suzzingv.suzzingv.rockstar.domain.band.infrastructure.BandRepository;
 import suzzingv.suzzingv.rockstar.domain.user.domain.entity.User;
 import suzzingv.suzzingv.rockstar.domain.user.domain.enums.Role;
 import suzzingv.suzzingv.rockstar.domain.user.exception.UserException;
@@ -28,6 +31,7 @@ import suzzingv.suzzingv.rockstar.global.sms.SmsSender;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final BandService bandService;
     private final SmsSender smsSender;
     private final RedisService redisService;
     private final JwtService jwtService;
@@ -150,5 +154,13 @@ public class UserService {
 
         return TokenResponse.of(newAccessToken, newRefreshToken);
         // accessToken 만료 -> refreshToken 보내 토큰 재발급 -> refreshToken도 만료됐으면 다시 로그인해야됨
+    }
+
+    public UserInfoByBandResponse getUserInfoByBand(Long userId, Long bandId) {
+        Band band = bandService.findById(bandId);
+        User user = findUserById(userId);
+        boolean isManager = band.getManagerId().equals(userId);
+
+        return UserInfoByBandResponse.of(user, isManager);
     }
 }

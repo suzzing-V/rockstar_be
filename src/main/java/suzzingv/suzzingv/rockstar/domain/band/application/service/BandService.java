@@ -121,7 +121,7 @@ public class BandService {
         }
     }
 
-    private Band findById(Long bandId) {
+    public Band findById(Long bandId) {
         return bandRepository.findById(bandId)
             .orElseThrow(() -> new BandException(ErrorCode.BAND_NOT_FOUND));
     }
