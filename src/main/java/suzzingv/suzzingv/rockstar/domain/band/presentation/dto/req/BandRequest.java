@@ -7,7 +7,7 @@ public class BandRequest {
 
     private String name;
 
-    private String image;
+//    private String image;
 
-    private String introduction;
+//    private String introduction;
 }

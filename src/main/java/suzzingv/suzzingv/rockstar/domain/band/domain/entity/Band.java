@@ -30,25 +30,25 @@ public class Band {
     @Column(nullable = false)
     private Long managerId;
 
-    private String image;
+//    private String image;
 
     @Column(nullable = false)
     private String invitationUrl;
 
-    @Lob
-    @Column(columnDefinition = "TEXT")
-    private String introduction;
+//    @Lob
+//    @Column(columnDefinition = "TEXT")
+//    private String introduction;
 
     @CreationTimestamp
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
     @Builder
-    private Band(Long managerId, String name, String image, String introduction, String invitationUrl) {
+    private Band(Long managerId, String name, String invitationUrl) {
         this.managerId = managerId;
         this.name = name;
-        this.image = image;
-        this.introduction = introduction;
+//        this.image = image;
+//        this.introduction = introduction;
         this.invitationUrl = invitationUrl;
     }
 }

@@ -45,8 +45,8 @@ public class BandService {
         Band band = Band.builder()
             .managerId(userId)
             .name(request.getName())
-            .image(request.getImage())
-            .introduction(request.getImage())
+//            .image(request.getImage())
+//            .introduction(request.getImage())
             .invitationUrl(invitationUrl)
             .build();
         bandRepository.save(band);
