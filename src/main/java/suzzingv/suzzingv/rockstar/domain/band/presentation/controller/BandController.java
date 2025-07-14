@@ -8,10 +8,7 @@ import suzzingv.suzzingv.rockstar.domain.band.application.service.BandService;
 import suzzingv.suzzingv.rockstar.domain.band.presentation.dto.req.BandRequest;
 import suzzingv.suzzingv.rockstar.domain.band.presentation.dto.req.BandInvitationUrlRequest;
 import suzzingv.suzzingv.rockstar.domain.band.presentation.dto.req.EntryAcceptRequest;
-import suzzingv.suzzingv.rockstar.domain.band.presentation.dto.res.BandNameResponse;
-import suzzingv.suzzingv.rockstar.domain.band.presentation.dto.res.BandResponse;
-import suzzingv.suzzingv.rockstar.domain.band.presentation.dto.res.EntryAcceptResponse;
-import suzzingv.suzzingv.rockstar.domain.band.presentation.dto.res.EntryApplicationResponse;
+import suzzingv.suzzingv.rockstar.domain.band.presentation.dto.res.*;
 import suzzingv.suzzingv.rockstar.domain.user.domain.entity.User;
 
 import java.util.List;
@@ -62,8 +59,8 @@ public class BandController {
     }
 
     @GetMapping("/user")
-    public ResponseEntity<List<BandNameResponse>> getListByUser(@AuthenticationPrincipal User user) {
-        List<BandNameResponse> response = bandService.getListByUser(user.getId());
+    public ResponseEntity<List<BandShortInfoResponse>> getListByUser(@AuthenticationPrincipal User user) {
+        List<BandShortInfoResponse> response = bandService.getListByUser(user.getId());
         return ResponseEntity.ok(response);
     }
 }

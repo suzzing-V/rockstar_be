@@ -13,10 +13,7 @@ import suzzingv.suzzingv.rockstar.domain.band.infrastructure.BandUserRepository;
 import suzzingv.suzzingv.rockstar.domain.band.infrastructure.EntryRepository;
 import suzzingv.suzzingv.rockstar.domain.band.presentation.dto.req.BandRequest;
 import suzzingv.suzzingv.rockstar.domain.band.presentation.dto.req.EntryAcceptRequest;
-import suzzingv.suzzingv.rockstar.domain.band.presentation.dto.res.BandNameResponse;
-import suzzingv.suzzingv.rockstar.domain.band.presentation.dto.res.BandResponse;
-import suzzingv.suzzingv.rockstar.domain.band.presentation.dto.res.EntryAcceptResponse;
-import suzzingv.suzzingv.rockstar.domain.band.presentation.dto.res.EntryApplicationResponse;
+import suzzingv.suzzingv.rockstar.domain.band.presentation.dto.res.*;
 import suzzingv.suzzingv.rockstar.domain.band.util.UrlUtil;
 import suzzingv.suzzingv.rockstar.domain.user.domain.entity.User;
 import suzzingv.suzzingv.rockstar.domain.user.exception.UserException;
@@ -25,7 +22,6 @@ import suzzingv.suzzingv.rockstar.global.response.properties.ErrorCode;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -140,12 +136,15 @@ public class BandService {
             .orElseThrow(() -> new BandException(ErrorCode.BAND_NOT_FOUND));
     }
 
-    public List<BandNameResponse> getListByUser(Long userId) {
+    public List<BandShortInfoResponse> getListByUser(Long userId) {
         List<BandUser> byUserId = bandUserRepository.findByUserId(userId);
-        List<BandNameResponse> responses = byUserId.stream()
+        List<BandShortInfoResponse> responses = byUserId.stream()
                 .map(bandUser -> {
                     Band band = findById(bandUser.getBandId());
-                    return BandNameResponse.of(bandUser.getBandId(), band.getName());
+                    boolean isManager = false;
+                    if(Objects.equals(band.getManagerId(), userId)) isManager = true;
+
+                    return BandShortInfoResponse.of(bandUser.getBandId(), band.getName(), isManager);
                 })
                 .collect(Collectors.toList());
 
