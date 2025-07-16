@@ -8,15 +8,21 @@ import suzzingv.suzzingv.rockstar.domain.schedule.domain.Schedule;
 @Builder
 public class ScheduleResponse {
 
-    private Integer year;
+    private Long scheduleId;
 
-    private Integer month;
+    private Integer startYear;
 
-    private Integer day;
+    private Integer startMonth;
 
-    private Integer hour;
+    private Integer startDay;
 
-    private Integer minute;
+    private Integer startHour;
+
+    private Integer startMinute;
+
+    private Integer endHour;
+
+    private Integer endMinute;
 
     private String dayOfWeek;
 
@@ -26,11 +32,14 @@ public class ScheduleResponse {
 
     public static ScheduleResponse from(Schedule schedule) {
         return ScheduleResponse.builder()
-                .year(schedule.getStartDate().getYear())
-                .month(schedule.getStartDate().getMonthValue())
-                .day(schedule.getStartDate().getDayOfMonth())
-                .hour(schedule.getStartDate().getHour())
-                .minute(schedule.getStartDate().getMinute())
+                .scheduleId(schedule.getId())
+                .startYear(schedule.getStartDate().getYear())
+                .startMonth(schedule.getStartDate().getMonthValue())
+                .startDay(schedule.getStartDate().getDayOfMonth())
+                .startHour(schedule.getStartDate().getHour())
+                .startMinute(schedule.getStartDate().getMinute())
+                .endHour(schedule.getEndDate().getHour())
+                .endMinute(schedule.getEndDate().getMinute())
                 .dayOfWeek(schedule.getDayOfWeek())
                 .dayDiff(schedule.getDayDiff())
                 .description(schedule.getDescription())

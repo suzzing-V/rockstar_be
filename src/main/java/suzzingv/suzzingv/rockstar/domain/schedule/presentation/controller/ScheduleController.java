@@ -2,14 +2,13 @@ package suzzingv.suzzingv.rockstar.domain.schedule.presentation.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import suzzingv.suzzingv.rockstar.domain.schedule.appplication.ScheduleService;
 import suzzingv.suzzingv.rockstar.domain.schedule.presentation.dto.req.ScheduleRequest;
 import suzzingv.suzzingv.rockstar.domain.schedule.presentation.dto.res.ScheduleCreateResponse;
-import suzzingv.suzzingv.rockstar.domain.schedule.presentation.dto.res.ScheduleResponse;
+import suzzingv.suzzingv.rockstar.domain.schedule.presentation.dto.res.ScheduleListResponse;
 import suzzingv.suzzingv.rockstar.domain.user.domain.entity.User;
 
 @RestController
@@ -21,9 +20,9 @@ public class ScheduleController {
     private final ScheduleService scheduleService;
 
     @GetMapping("/band/{bandId}")
-    public ResponseEntity<Page<ScheduleResponse>> getScheduleByBand(@AuthenticationPrincipal User user, @PathVariable Long bandId, @RequestParam(defaultValue = "0") int page,
-                                                                    @RequestParam(defaultValue = "10") int size) {
-        Page<ScheduleResponse> response = scheduleService.getByBand(user.getId(), bandId, page, size);
+    public ResponseEntity<ScheduleListResponse> getScheduleByBand(@AuthenticationPrincipal User user, @PathVariable Long bandId, @RequestParam(defaultValue = "0") int page,
+                                                                  @RequestParam(defaultValue = "10") int size) {
+        ScheduleListResponse response = scheduleService.getByBand(user.getId(), bandId, page, size);
         return ResponseEntity.ok(response);
     }
 

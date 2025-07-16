@@ -5,7 +5,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.scheduling.SchedulingException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import suzzingv.suzzingv.rockstar.domain.band.application.service.BandService;
@@ -15,6 +14,7 @@ import suzzingv.suzzingv.rockstar.domain.schedule.exception.ScheduleException;
 import suzzingv.suzzingv.rockstar.domain.schedule.infrastructure.ScheduleRepository;
 import suzzingv.suzzingv.rockstar.domain.schedule.presentation.dto.req.ScheduleRequest;
 import suzzingv.suzzingv.rockstar.domain.schedule.presentation.dto.res.ScheduleCreateResponse;
+import suzzingv.suzzingv.rockstar.domain.schedule.presentation.dto.res.ScheduleListResponse;
 import suzzingv.suzzingv.rockstar.domain.schedule.presentation.dto.res.ScheduleResponse;
 import suzzingv.suzzingv.rockstar.global.response.properties.ErrorCode;
 
@@ -22,6 +22,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.TextStyle;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.Locale;
 
 @Service
@@ -33,12 +34,16 @@ public class ScheduleService {
     private final BandService bandService;
 
     @Transactional(readOnly = true)
-    public Page<ScheduleResponse> getByBand(Long userId, Long bandId, int page, int size) {
+    public ScheduleListResponse getByBand(Long userId, Long bandId, int page, int size) {
         bandService.isBandMember(bandId, userId);
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "startDate"));
-        Page<Schedule> scheduleList = scheduleRepository.findByBandIdOrderByStartDateDesc(bandId, pageable);
+        Band band = bandService.findById(bandId);
+        boolean isManager = band.getManagerId().equals(userId);
 
-        return scheduleList.map(ScheduleResponse::from);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "startDate"));
+        Page<Schedule> schedulePage = scheduleRepository.findByBandIdOrderByStartDateDesc(bandId, pageable);
+        List<ScheduleResponse> scheduleList = schedulePage.map(ScheduleResponse::from).getContent();
+
+        return ScheduleListResponse.of(scheduleList, isManager);
     }
 
     public ScheduleCreateResponse createSchedule(Long userId, ScheduleRequest request) {
