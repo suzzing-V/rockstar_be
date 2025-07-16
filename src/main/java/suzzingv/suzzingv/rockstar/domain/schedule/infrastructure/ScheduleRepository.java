@@ -9,5 +9,5 @@ import suzzingv.suzzingv.rockstar.domain.schedule.domain.Schedule;
 @Repository
 public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 
-    Page<Schedule> findByBandIdOrderByDateDesc(Long bandId, Pageable pageable);
+    Page<Schedule> findByBandIdOrderByStartDateDesc(Long bandId, Pageable pageable);
 }

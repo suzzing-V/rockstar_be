@@ -1,5 +1,6 @@
 package suzzingv.suzzingv.rockstar.global.response.properties;
 
+import com.google.api.Http;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,8 @@ public enum ErrorCode {
     VERIFICATION_CODE_INCORRECT(HttpStatus.BAD_REQUEST, "인증 코드가 올바르지 않습니다."),
     USER_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "이미 존재하는 유저입니다."),
     NICKNAME_DUPLICATION(HttpStatus.BAD_REQUEST, "이미 사용 중인 닉네임입니다."),
+    END_DATE_BEFORE_START_DATE(HttpStatus.BAD_REQUEST, "종료 날짜가 시작 날짜보다 이릅니다."),
+    NOT_BAND_MEMBER(HttpStatus.BAD_REQUEST, "해당 밴드의 멤버가 아닙니다."),
 
     // 401
     SECURITY_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "인증 정보가 유효하지 않습니다"),

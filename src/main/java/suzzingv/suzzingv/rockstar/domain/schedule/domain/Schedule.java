@@ -2,6 +2,7 @@ package suzzingv.suzzingv.rockstar.domain.schedule.domain;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -22,8 +23,24 @@ public class Schedule {
     private String description;
 
     @Column(nullable = false)
-    private LocalDateTime date;
+    private LocalDateTime startDate;
+
+    @Column(nullable = false)
+    private LocalDateTime endDate;
 
     @Column(nullable = false)
     private String dayOfWeek;
+
+    @Column(nullable = false)
+    private Long dayDiff;
+
+    @Builder
+    public Schedule(Long bandId, String description, LocalDateTime startDate, LocalDateTime endDate, String dayOfWeek, Long dayDiff) {
+        this.bandId = bandId;
+        this.description = description;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.dayOfWeek = dayOfWeek;
+        this.dayDiff = dayDiff;
+    }
 }

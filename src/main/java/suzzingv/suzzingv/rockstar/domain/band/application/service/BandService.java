@@ -119,7 +119,7 @@ public class BandService {
         entryRepository.deleteByUserIdAndBandId(userId, bandId);
     }
 
-    private void isManager(Long userId, Long managerId) {
+    public void isManager(Long userId, Long managerId) {
         if(!Objects.equals(userId, managerId)) {
             throw new BandException(ErrorCode.MANAGER_REQUIRED);
         }
@@ -138,6 +138,11 @@ public class BandService {
     private Band findByInvitationUrl(String url) {
         return bandRepository.findByInvitationUrl(url)
             .orElseThrow(() -> new BandException(ErrorCode.BAND_NOT_FOUND));
+    }
+
+    public void isBandMember(Long bandId, Long userId) {
+        bandUserRepository.findByBandIdAndUserId(bandId, userId)
+                .orElseThrow(() -> new BandException(ErrorCode.NOT_BAND_MEMBER));
     }
 
     @Transactional(readOnly = true)

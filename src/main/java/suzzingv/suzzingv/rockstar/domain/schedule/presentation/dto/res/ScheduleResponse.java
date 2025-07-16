@@ -20,16 +20,19 @@ public class ScheduleResponse {
 
     private String dayOfWeek;
 
+    private Long dayDiff;
+
     private String description;
 
     public static ScheduleResponse from(Schedule schedule) {
         return ScheduleResponse.builder()
-                .year(schedule.getDate().getYear())
-                .month(schedule.getDate().getMonthValue())
-                .day(schedule.getDate().getDayOfMonth())
-                .hour(schedule.getDate().getHour())
-                .minute(schedule.getDate().getMinute())
+                .year(schedule.getStartDate().getYear())
+                .month(schedule.getStartDate().getMonthValue())
+                .day(schedule.getStartDate().getDayOfMonth())
+                .hour(schedule.getStartDate().getHour())
+                .minute(schedule.getStartDate().getMinute())
                 .dayOfWeek(schedule.getDayOfWeek())
+                .dayDiff(schedule.getDayDiff())
                 .description(schedule.getDescription())
                 .build();
     }
