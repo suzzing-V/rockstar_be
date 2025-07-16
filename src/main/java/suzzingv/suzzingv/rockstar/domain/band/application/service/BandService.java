@@ -1,9 +1,13 @@
 package suzzingv.suzzingv.rockstar.domain.band.application.service;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import suzzingv.suzzingv.rockstar.domain.band.domain.entity.Band;
 import suzzingv.suzzingv.rockstar.domain.band.domain.entity.BandUser;
 import suzzingv.suzzingv.rockstar.domain.band.domain.entity.Entry;
@@ -136,17 +140,17 @@ public class BandService {
             .orElseThrow(() -> new BandException(ErrorCode.BAND_NOT_FOUND));
     }
 
-    public List<BandShortInfoResponse> getListByUser(Long userId) {
-        List<BandUser> byUserId = bandUserRepository.findByUserId(userId);
-        List<BandShortInfoResponse> responses = byUserId.stream()
-                .map(bandUser -> {
+    @Transactional(readOnly = true)
+    public Page<BandShortInfoResponse> getListByUser(Long userId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
+        Page<BandUser> byUserId = bandUserRepository.findByUserIdOrderById(userId, pageable);
+        Page<BandShortInfoResponse> responses = byUserId.map(bandUser -> {
                     Band band = findById(bandUser.getBandId());
                     boolean isManager = false;
                     if(Objects.equals(band.getManagerId(), userId)) isManager = true;
 
                     return BandShortInfoResponse.of(bandUser.getBandId(), band.getName(), isManager);
-                })
-                .collect(Collectors.toList());
+                });
 
         return responses;
     }

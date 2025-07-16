@@ -21,7 +21,7 @@ public class ScheduleController {
 
     @GetMapping("/band/{bandId}")
     public ResponseEntity<Page<ScheduleResponse>> getScheduleByBand(@PathVariable Long bandId, @RequestParam(defaultValue = "0") int page,
-                                                                    @RequestParam(defaultValue = "6") int size) {
+                                                                    @RequestParam(defaultValue = "10") int size) {
         Page<ScheduleResponse> response = scheduleService.getByBand(bandId, page, size);
         return ResponseEntity.ok(response);
     }

@@ -1,6 +1,7 @@
 package suzzingv.suzzingv.rockstar.domain.band.presentation.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -59,8 +60,9 @@ public class BandController {
     }
 
     @GetMapping("/user")
-    public ResponseEntity<List<BandShortInfoResponse>> getListByUser(@AuthenticationPrincipal User user) {
-        List<BandShortInfoResponse> response = bandService.getListByUser(user.getId());
+    public ResponseEntity<Page<BandShortInfoResponse>> getListByUser(@AuthenticationPrincipal User user, @RequestParam(defaultValue = "0") int page,
+                                                                     @RequestParam(defaultValue = "10") int size) {
+        Page<BandShortInfoResponse> response = bandService.getListByUser(user.getId(), page, size);
         return ResponseEntity.ok(response);
     }
 }
