@@ -11,12 +11,12 @@ import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMap
 import org.springframework.security.core.authority.mapping.NullAuthoritiesMapper;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
+import suzzingv.suzzingv.rockstar.domain.user.domain.entity.User;
+import suzzingv.suzzingv.rockstar.domain.user.infrastructure.UserRepository;
 import suzzingv.suzzingv.rockstar.global.redis.RedisService;
 import suzzingv.suzzingv.rockstar.global.response.properties.ErrorCode;
 import suzzingv.suzzingv.rockstar.global.security.exception.AuthException;
 import suzzingv.suzzingv.rockstar.global.security.jwt.service.JwtService;
-import suzzingv.suzzingv.rockstar.domain.user.domain.entity.User;
-import suzzingv.suzzingv.rockstar.domain.user.infrastructure.UserRepository;
 
 import java.io.IOException;
 

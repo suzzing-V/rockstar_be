@@ -7,10 +7,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
-
-import java.io.IOException;
 import suzzingv.suzzingv.rockstar.global.response.dto.ErrorResponse;
 import suzzingv.suzzingv.rockstar.global.response.properties.ErrorCode;
+
+import java.io.IOException;
 
 public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 

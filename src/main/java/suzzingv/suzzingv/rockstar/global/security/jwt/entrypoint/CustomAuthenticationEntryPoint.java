@@ -9,10 +9,10 @@ import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
-
-import java.io.IOException;
 import suzzingv.suzzingv.rockstar.global.response.dto.ErrorResponse;
 import suzzingv.suzzingv.rockstar.global.response.properties.ErrorCode;
+
+import java.io.IOException;
 
 @Component
 @Slf4j

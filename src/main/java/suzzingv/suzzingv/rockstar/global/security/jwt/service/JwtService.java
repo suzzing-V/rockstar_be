@@ -8,10 +8,10 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import suzzingv.suzzingv.rockstar.domain.user.infrastructure.UserRepository;
 import suzzingv.suzzingv.rockstar.global.redis.RedisService;
 import suzzingv.suzzingv.rockstar.global.response.properties.ErrorCode;
 import suzzingv.suzzingv.rockstar.global.security.exception.AuthException;
-import suzzingv.suzzingv.rockstar.domain.user.infrastructure.UserRepository;
 
 import java.time.Duration;
 import java.util.Date;

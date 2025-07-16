@@ -1,14 +1,11 @@
 package suzzingv.suzzingv.rockstar.domain.user.application.service;
 
 import jakarta.transaction.Transactional;
-import java.time.Duration;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import suzzingv.suzzingv.rockstar.domain.band.application.service.BandService;
 import suzzingv.suzzingv.rockstar.domain.band.domain.entity.Band;
-import suzzingv.suzzingv.rockstar.domain.band.infrastructure.BandRepository;
 import suzzingv.suzzingv.rockstar.domain.user.domain.entity.User;
 import suzzingv.suzzingv.rockstar.domain.user.domain.enums.Role;
 import suzzingv.suzzingv.rockstar.domain.user.exception.UserException;
@@ -23,6 +20,9 @@ import suzzingv.suzzingv.rockstar.global.response.properties.ErrorCode;
 import suzzingv.suzzingv.rockstar.global.security.jwt.service.JwtService;
 import suzzingv.suzzingv.rockstar.global.sms.MessageUtils;
 import suzzingv.suzzingv.rockstar.global.sms.SmsSender;
+
+import java.time.Duration;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor

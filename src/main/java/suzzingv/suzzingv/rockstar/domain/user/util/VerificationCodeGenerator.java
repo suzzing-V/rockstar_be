@@ -1,8 +1,9 @@
 package suzzingv.suzzingv.rockstar.domain.user.util;
 
-import java.util.Random;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+
+import java.util.Random;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class VerificationCodeGenerator {

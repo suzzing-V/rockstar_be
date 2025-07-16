@@ -10,13 +10,13 @@ import org.springframework.security.config.annotation.web.configurers.HeadersCon
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
+import suzzingv.suzzingv.rockstar.domain.user.infrastructure.UserRepository;
 import suzzingv.suzzingv.rockstar.global.redis.RedisService;
 import suzzingv.suzzingv.rockstar.global.security.jwt.entrypoint.CustomAuthenticationEntryPoint;
 import suzzingv.suzzingv.rockstar.global.security.jwt.filter.ExceptionHandlerFilter;
 import suzzingv.suzzingv.rockstar.global.security.jwt.filter.JwtAuthenticationProcessingFilter;
 import suzzingv.suzzingv.rockstar.global.security.jwt.handler.CustomAccessDeniedHandler;
 import suzzingv.suzzingv.rockstar.global.security.jwt.service.JwtService;
-import suzzingv.suzzingv.rockstar.domain.user.infrastructure.UserRepository;
 
 @Configuration
 @RequiredArgsConstructor
