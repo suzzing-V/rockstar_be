@@ -40,10 +40,10 @@ public class ScheduleController {
         return ResponseEntity.ok(response);
     }
 
-//    @GetMapping("/{scheduleId}")
-//    public ResponseEntity<ScheduleResponse> getSchedule(@AuthenticationPrincipal User user, @PathVariable Long scheduleId) {
-//        ScheduleResponse response = scheduleService.getSchedule(scheduleId);
-//        return ResponseEntity.ok(response);
-//    }
+    @GetMapping("/{scheduleId}")
+    public ResponseEntity<ScheduleResponse> getSchedule(@AuthenticationPrincipal User user, @PathVariable Long scheduleId) {
+        ScheduleResponse response = scheduleService.getSchedule(scheduleId);
+        return ResponseEntity.ok(response);
+    }
 
 }

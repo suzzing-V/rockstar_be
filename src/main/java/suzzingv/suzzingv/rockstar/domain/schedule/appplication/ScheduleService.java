@@ -92,8 +92,7 @@ public class ScheduleService {
     }
 
     public ScheduleIdResponse updateSchedule(Long scheduleId, ScheduleRequest request) {
-        Schedule schedule = scheduleRepository.findById(scheduleId)
-                .orElseThrow(() -> new ScheduleException(ErrorCode.SCHEDULE_NOT_FOUND));
+        Schedule schedule = findById(scheduleId);
         LocalDateTime startDateTime = LocalDateTime.of(
                 request.getStartYear(),
                 request.getStartMonth(),
@@ -125,8 +124,15 @@ public class ScheduleService {
         return ScheduleIdResponse.from(scheduleId);
     }
 
-//    public ScheduleResponse getSchedule(Long scheduleId) {
-//        Schedule schedule = scheduleRepository.findById(scheduleId)
-//                .orElseThrow(() -> new ScheduleException(ErrorCode.SCHEDULE_NOT_FOUND));
-//    }
+    private Schedule findById(Long scheduleId) {
+        Schedule schedule = scheduleRepository.findById(scheduleId)
+                .orElseThrow(() -> new ScheduleException(ErrorCode.SCHEDULE_NOT_FOUND));
+        return schedule;
+    }
+
+    public ScheduleResponse getSchedule(Long scheduleId) {
+        Schedule schedule = scheduleRepository.findById(scheduleId)
+                .orElseThrow(() -> new ScheduleException(ErrorCode.SCHEDULE_NOT_FOUND));
+        return ScheduleResponse.from(schedule);
+    }
 }
