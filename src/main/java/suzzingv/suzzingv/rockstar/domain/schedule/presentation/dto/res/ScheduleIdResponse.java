@@ -2,16 +2,15 @@ package suzzingv.suzzingv.rockstar.domain.schedule.presentation.dto.res;
 
 import lombok.Builder;
 import lombok.Getter;
-import suzzingv.suzzingv.rockstar.domain.schedule.domain.Schedule;
 
 @Getter
 @Builder
-public class ScheduleCreateResponse {
+public class ScheduleIdResponse {
 
     private Long scheduleId;
 
-    public static ScheduleCreateResponse from(Long scheduleId) {
-        return ScheduleCreateResponse.builder()
+    public static ScheduleIdResponse from(Long scheduleId) {
+        return ScheduleIdResponse.builder()
                 .scheduleId(scheduleId)
                 .build();
     }

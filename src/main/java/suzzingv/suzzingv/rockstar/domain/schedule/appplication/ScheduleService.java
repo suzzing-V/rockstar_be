@@ -13,7 +13,7 @@ import suzzingv.suzzingv.rockstar.domain.schedule.domain.Schedule;
 import suzzingv.suzzingv.rockstar.domain.schedule.exception.ScheduleException;
 import suzzingv.suzzingv.rockstar.domain.schedule.infrastructure.ScheduleRepository;
 import suzzingv.suzzingv.rockstar.domain.schedule.presentation.dto.req.ScheduleRequest;
-import suzzingv.suzzingv.rockstar.domain.schedule.presentation.dto.res.ScheduleCreateResponse;
+import suzzingv.suzzingv.rockstar.domain.schedule.presentation.dto.res.ScheduleIdResponse;
 import suzzingv.suzzingv.rockstar.domain.schedule.presentation.dto.res.ScheduleListResponse;
 import suzzingv.suzzingv.rockstar.domain.schedule.presentation.dto.res.ScheduleResponse;
 import suzzingv.suzzingv.rockstar.global.response.properties.ErrorCode;
@@ -46,7 +46,7 @@ public class ScheduleService {
         return ScheduleListResponse.of(scheduleList, isManager);
     }
 
-    public ScheduleCreateResponse createSchedule(Long userId, ScheduleRequest request) {
+    public ScheduleIdResponse createSchedule(Long userId, ScheduleRequest request) {
         Band band = bandService.findById(request.getBandId());
         bandService.isManager(userId, band.getManagerId());
 
@@ -57,7 +57,7 @@ public class ScheduleService {
                 request.getStartHour(),
                 request.getStartMinute()
         );
-        String dayOfWeeks = startDateTime.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.ENGLISH);
+        String dayOfWeeks = startDateTime.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.ENGLISH).toUpperCase();
         LocalDateTime endDateTime = LocalDateTime.of(
                 request.getEndYear(),
                 request.getEndMonth(),
@@ -82,7 +82,7 @@ public class ScheduleService {
                 .build();
         scheduleRepository.save(schedule);
 
-        return ScheduleCreateResponse.from(schedule.getId());
+        return ScheduleIdResponse.from(schedule.getId());
     }
 
     private void isEndBeforeStart(LocalDateTime startDateTime, LocalDateTime endDateTime) {
@@ -90,4 +90,43 @@ public class ScheduleService {
             throw new ScheduleException(ErrorCode.END_DATE_BEFORE_START_DATE);
         }
     }
+
+    public ScheduleIdResponse updateSchedule(Long scheduleId, ScheduleRequest request) {
+        Schedule schedule = scheduleRepository.findById(scheduleId)
+                .orElseThrow(() -> new ScheduleException(ErrorCode.SCHEDULE_NOT_FOUND));
+        LocalDateTime startDateTime = LocalDateTime.of(
+                request.getStartYear(),
+                request.getStartMonth(),
+                request.getStartDay(),
+                request.getStartHour(),
+                request.getStartMinute()
+        );
+        String dayOfWeeks = startDateTime.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.ENGLISH).toUpperCase();
+        LocalDateTime endDateTime = LocalDateTime.of(
+                request.getEndYear(),
+                request.getEndMonth(),
+                request.getEndDay(),
+                request.getEndHour(),
+                request.getEndMinute()
+        );
+        isEndBeforeStart(startDateTime, endDateTime);
+
+        LocalDate startDate = startDateTime.toLocalDate();
+        LocalDate endDate = endDateTime.toLocalDate();
+
+        long dayDiff = ChronoUnit.DAYS.between(startDate, endDate);
+
+        schedule.changeDescription(request.getDescription());
+        schedule.changeDayDiff(dayDiff);
+        schedule.changeDayOfWeek(dayOfWeeks);
+        schedule.changeStartDate(startDateTime);
+        schedule.changeEndDate(endDateTime);
+
+        return ScheduleIdResponse.from(scheduleId);
+    }
+
+//    public ScheduleResponse getSchedule(Long scheduleId) {
+//        Schedule schedule = scheduleRepository.findById(scheduleId)
+//                .orElseThrow(() -> new ScheduleException(ErrorCode.SCHEDULE_NOT_FOUND));
+//    }
 }

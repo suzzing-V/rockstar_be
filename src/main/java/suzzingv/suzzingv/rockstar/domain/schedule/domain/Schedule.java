@@ -43,4 +43,24 @@ public class Schedule {
         this.dayOfWeek = dayOfWeek;
         this.dayDiff = dayDiff;
     }
+
+    public void changeDescription(String description) {
+        this.description = description;
+    }
+
+    public void changeStartDate(LocalDateTime startDate) {
+        this.startDate = startDate;
+    }
+
+    public void changeEndDate(LocalDateTime endDate) {
+        this.endDate = endDate;
+    }
+
+    public void changeDayOfWeek(String dayOfWeek) {
+        this.dayOfWeek = dayOfWeek;
+    }
+
+    public void changeDayDiff(Long dayDiff) {
+        this.dayDiff = dayDiff;
+    }
 }

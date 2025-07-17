@@ -7,8 +7,9 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import suzzingv.suzzingv.rockstar.domain.schedule.appplication.ScheduleService;
 import suzzingv.suzzingv.rockstar.domain.schedule.presentation.dto.req.ScheduleRequest;
-import suzzingv.suzzingv.rockstar.domain.schedule.presentation.dto.res.ScheduleCreateResponse;
+import suzzingv.suzzingv.rockstar.domain.schedule.presentation.dto.res.ScheduleIdResponse;
 import suzzingv.suzzingv.rockstar.domain.schedule.presentation.dto.res.ScheduleListResponse;
+import suzzingv.suzzingv.rockstar.domain.schedule.presentation.dto.res.ScheduleResponse;
 import suzzingv.suzzingv.rockstar.domain.user.domain.entity.User;
 
 @RestController
@@ -27,10 +28,22 @@ public class ScheduleController {
     }
 
     @PostMapping
-    public ResponseEntity<ScheduleCreateResponse> createSchedule(@AuthenticationPrincipal User user, @RequestBody ScheduleRequest request) {
+    public ResponseEntity<ScheduleIdResponse> createSchedule(@AuthenticationPrincipal User user, @RequestBody ScheduleRequest request) {
         log.info(request.getDescription());
-        ScheduleCreateResponse response = scheduleService.createSchedule(user.getId(), request);
+        ScheduleIdResponse response = scheduleService.createSchedule(user.getId(), request);
         return ResponseEntity.ok(response);
     }
+
+    @PutMapping("/{scheduleId}")
+    public ResponseEntity<ScheduleIdResponse> updateSchedule(@PathVariable Long scheduleId, @RequestBody ScheduleRequest scheduleRequest) {
+        ScheduleIdResponse response = scheduleService.updateSchedule(scheduleId, scheduleRequest);
+        return ResponseEntity.ok(response);
+    }
+
+//    @GetMapping("/{scheduleId}")
+//    public ResponseEntity<ScheduleResponse> getSchedule(@AuthenticationPrincipal User user, @PathVariable Long scheduleId) {
+//        ScheduleResponse response = scheduleService.getSchedule(scheduleId);
+//        return ResponseEntity.ok(response);
+//    }
 
 }
