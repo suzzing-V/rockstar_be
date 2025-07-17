@@ -16,6 +16,7 @@ import suzzingv.suzzingv.rockstar.domain.schedule.presentation.dto.req.ScheduleR
 import suzzingv.suzzingv.rockstar.domain.schedule.presentation.dto.res.ScheduleIdResponse;
 import suzzingv.suzzingv.rockstar.domain.schedule.presentation.dto.res.ScheduleListResponse;
 import suzzingv.suzzingv.rockstar.domain.schedule.presentation.dto.res.ScheduleResponse;
+import suzzingv.suzzingv.rockstar.domain.schedule.presentation.dto.res.ScheduleShortResponse;
 import suzzingv.suzzingv.rockstar.global.response.properties.ErrorCode;
 
 import java.time.LocalDate;
@@ -41,7 +42,7 @@ public class ScheduleService {
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "startDate"));
         Page<Schedule> schedulePage = scheduleRepository.findByBandIdOrderByStartDateDesc(bandId, pageable);
-        List<ScheduleResponse> scheduleList = schedulePage.map(ScheduleResponse::from).getContent();
+        List<ScheduleShortResponse> scheduleList = schedulePage.map(ScheduleShortResponse::from).getContent();
 
         return ScheduleListResponse.of(scheduleList, isManager);
     }

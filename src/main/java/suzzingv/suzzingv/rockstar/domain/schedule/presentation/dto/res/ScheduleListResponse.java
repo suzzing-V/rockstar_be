@@ -2,7 +2,6 @@ package suzzingv.suzzingv.rockstar.domain.schedule.presentation.dto.res;
 
 import lombok.Builder;
 import lombok.Getter;
-import suzzingv.suzzingv.rockstar.domain.schedule.domain.Schedule;
 
 import java.util.List;
 
@@ -12,9 +11,9 @@ public class ScheduleListResponse {
 
     private Boolean isManager;
 
-    private List<ScheduleResponse> scheduleList;
+    private List<ScheduleShortResponse> scheduleList;
 
-    public static ScheduleListResponse of(List<ScheduleResponse> scheduleList, boolean isManager) {
+    public static ScheduleListResponse of(List<ScheduleShortResponse> scheduleList, boolean isManager) {
         return ScheduleListResponse.builder()
                 .scheduleList(scheduleList)
                 .isManager(isManager)

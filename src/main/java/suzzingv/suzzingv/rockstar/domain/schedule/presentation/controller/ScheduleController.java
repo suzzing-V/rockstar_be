@@ -10,6 +10,7 @@ import suzzingv.suzzingv.rockstar.domain.schedule.presentation.dto.req.ScheduleR
 import suzzingv.suzzingv.rockstar.domain.schedule.presentation.dto.res.ScheduleIdResponse;
 import suzzingv.suzzingv.rockstar.domain.schedule.presentation.dto.res.ScheduleListResponse;
 import suzzingv.suzzingv.rockstar.domain.schedule.presentation.dto.res.ScheduleResponse;
+import suzzingv.suzzingv.rockstar.domain.schedule.presentation.dto.res.ScheduleShortResponse;
 import suzzingv.suzzingv.rockstar.domain.user.domain.entity.User;
 
 @RestController

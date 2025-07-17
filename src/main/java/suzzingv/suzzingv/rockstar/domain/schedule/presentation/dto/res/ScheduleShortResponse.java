@@ -6,7 +6,7 @@ import suzzingv.suzzingv.rockstar.domain.schedule.domain.Schedule;
 
 @Getter
 @Builder
-public class ScheduleResponse {
+public class ScheduleShortResponse {
 
     private Long scheduleId;
 
@@ -20,35 +20,23 @@ public class ScheduleResponse {
 
     private Integer startMinute;
 
-    private Integer endYear;
-
-    private Integer endMonth;
-
-    private Integer endDay;
-
     private Integer endHour;
 
     private Integer endMinute;
 
     private String dayOfWeek;
 
-    private String description;
-
-    public static ScheduleResponse from(Schedule schedule) {
-        return ScheduleResponse.builder()
+    public static ScheduleShortResponse from(Schedule schedule) {
+        return ScheduleShortResponse.builder()
                 .scheduleId(schedule.getId())
                 .startYear(schedule.getStartDate().getYear())
                 .startMonth(schedule.getStartDate().getMonthValue())
                 .startDay(schedule.getStartDate().getDayOfMonth())
                 .startHour(schedule.getStartDate().getHour())
                 .startMinute(schedule.getStartDate().getMinute())
-                .endYear(schedule.getEndDate().getYear())
-                .endMonth(schedule.getEndDate().getMonthValue())
-                .endDay(schedule.getEndDate().getDayOfMonth())
                 .endHour(schedule.getEndDate().getHour())
                 .endMinute(schedule.getEndDate().getMinute())
                 .dayOfWeek(schedule.getDayOfWeek())
-                .description(schedule.getDescription())
                 .build();
     }
 }
