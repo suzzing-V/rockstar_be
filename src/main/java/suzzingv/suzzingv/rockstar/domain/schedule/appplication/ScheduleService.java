@@ -136,4 +136,9 @@ public class ScheduleService {
                 .orElseThrow(() -> new ScheduleException(ErrorCode.SCHEDULE_NOT_FOUND));
         return ScheduleResponse.from(schedule);
     }
+
+    public void deleteSchedule(Long scheduleId) {
+        Schedule schedule = findById(scheduleId);
+        scheduleRepository.delete(schedule);
+    }
 }

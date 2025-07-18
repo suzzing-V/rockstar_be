@@ -47,4 +47,10 @@ public class ScheduleController {
         return ResponseEntity.ok(response);
     }
 
+    @DeleteMapping("/{scheduleId}")
+    public ResponseEntity<Void> deleteSchedule(@AuthenticationPrincipal User user, @PathVariable Long scheduleId) {
+        scheduleService.deleteSchedule(scheduleId);
+        return ResponseEntity.noContent().build();
+    }
+
 }
