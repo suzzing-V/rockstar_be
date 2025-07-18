@@ -2,6 +2,10 @@ package suzzingv.suzzingv.rockstar.domain.news.application;
 
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import suzzingv.suzzingv.rockstar.domain.news.domain.entity.News;
@@ -48,8 +52,9 @@ public class NewsService {
     }
 
     @Transactional(readOnly = true)
-    public List<NewsResponse> getNewsByBand(Long bandId) {
-        List<News> byBandId = newsRepository.findByBandId(bandId);
-        return byBandId.stream().map(NewsResponse::from).toList();
+    public Page<NewsResponse> getNewsByBand(Long bandId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        Page<News> byBandId = newsRepository.findByBandIdOrderByCreatedAt(bandId, pageable);
+        return byBandId.map(NewsResponse::from);
     }
 }
