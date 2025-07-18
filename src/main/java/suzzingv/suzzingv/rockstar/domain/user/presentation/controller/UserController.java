@@ -59,8 +59,9 @@ public class UserController {
     }
 
     @GetMapping("/band-member/{bandId}")
-    public ResponseEntity<List<UserInfoByBandResponse>> getBandMembers(@PathVariable Long bandId) {
-        List<UserInfoByBandResponse> response = userService.getUsersByBand(bandId);
+    public ResponseEntity<List<UserInfoByBandResponse>> getBandMembers(@PathVariable Long bandId, @RequestParam(defaultValue = "0") int page,
+                                                                       @RequestParam(defaultValue = "10") int size) {
+        List<UserInfoByBandResponse> response = userService.getUsersByBand(bandId, page, size);
         return ResponseEntity.ok(response);
     }
 
