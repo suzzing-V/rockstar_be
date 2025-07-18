@@ -3,6 +3,7 @@ package suzzingv.suzzingv.rockstar.domain.user.application.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -171,15 +172,15 @@ public class UserService {
         return UserInfoByBandResponse.of(user, isManager);
     }
 
-    public List<UserInfoByBandResponse> getUsersByBand(Long bandId, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "id"));
-        List<BandUser> bandUsers = bandUserRepository.findByBandId(bandId, pageable).toList();
+    public Page<UserInfoByBandResponse> getUsersByBand(Long bandId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "userId"));
+        Page<BandUser> bandUsers = bandUserRepository.findByBandId(bandId, pageable);
         Band band = bandService.findById(bandId);
 
-        return bandUsers.stream().map(bandUser -> {
+        return bandUsers.map(bandUser -> {
             User user = findUserById(bandUser.getUserId());
             boolean isManager = band.getManagerId().equals(user.getId());
             return UserInfoByBandResponse.of(user, isManager);
-        }).toList();
+        });
     }
 }

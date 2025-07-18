@@ -3,6 +3,7 @@ package suzzingv.suzzingv.rockstar.domain.user.presentation.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -59,9 +60,9 @@ public class UserController {
     }
 
     @GetMapping("/band-member/{bandId}")
-    public ResponseEntity<List<UserInfoByBandResponse>> getBandMembers(@PathVariable Long bandId, @RequestParam(defaultValue = "0") int page,
+    public ResponseEntity<Page<UserInfoByBandResponse>> getBandMembers(@PathVariable Long bandId, @RequestParam(defaultValue = "0") int page,
                                                                        @RequestParam(defaultValue = "10") int size) {
-        List<UserInfoByBandResponse> response = userService.getUsersByBand(bandId, page, size);
+        Page<UserInfoByBandResponse> response = userService.getUsersByBand(bandId, page, size);
         return ResponseEntity.ok(response);
     }
 
