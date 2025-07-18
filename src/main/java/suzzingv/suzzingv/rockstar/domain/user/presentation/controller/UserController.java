@@ -16,6 +16,8 @@ import suzzingv.suzzingv.rockstar.domain.user.presentation.dto.res.*;
 import suzzingv.suzzingv.rockstar.global.response.properties.ErrorCode;
 import suzzingv.suzzingv.rockstar.global.security.jwt.service.JwtService;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v0/user")
@@ -53,6 +55,12 @@ public class UserController {
     @GetMapping("/band/{bandId}")
     public ResponseEntity<UserInfoByBandResponse> getUserInfoByBand(@AuthenticationPrincipal User user, @PathVariable Long bandId) {
         UserInfoByBandResponse response = userService.getUserInfoByBand(user.getId(), bandId);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/band-member/{bandId}")
+    public ResponseEntity<List<UserInfoByBandResponse>> getBandMembers(@PathVariable Long bandId) {
+        List<UserInfoByBandResponse> response = userService.getUsersByBand(bandId);
         return ResponseEntity.ok(response);
     }
 

@@ -6,6 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import suzzingv.suzzingv.rockstar.domain.band.application.service.BandService;
 import suzzingv.suzzingv.rockstar.domain.band.domain.entity.Band;
+import suzzingv.suzzingv.rockstar.domain.band.domain.entity.BandUser;
+import suzzingv.suzzingv.rockstar.domain.band.infrastructure.BandUserRepository;
 import suzzingv.suzzingv.rockstar.domain.user.domain.entity.User;
 import suzzingv.suzzingv.rockstar.domain.user.domain.enums.Role;
 import suzzingv.suzzingv.rockstar.domain.user.exception.UserException;
@@ -22,6 +24,7 @@ import suzzingv.suzzingv.rockstar.global.sms.MessageUtils;
 import suzzingv.suzzingv.rockstar.global.sms.SmsSender;
 
 import java.time.Duration;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -35,6 +38,7 @@ public class UserService {
     private final SmsSender smsSender;
     private final RedisService redisService;
     private final JwtService jwtService;
+    private final BandUserRepository bandUserRepository;
 
     private static final String VERIFICATION_PREFIX = "verify_";
     private static final Duration VERIFICATION_DURATION = Duration.ofMinutes(1);
@@ -162,5 +166,16 @@ public class UserService {
         boolean isManager = band.getManagerId().equals(userId);
 
         return UserInfoByBandResponse.of(user, isManager);
+    }
+
+    public List<UserInfoByBandResponse> getUsersByBand(Long bandId) {
+        List<BandUser> byBandId = bandUserRepository.findByBandId(bandId);
+        Band band = bandService.findById(bandId);
+
+        return byBandId.stream().map(bandUser -> {
+            User user = findUserById(bandUser.getUserId());
+            boolean isManager = band.getManagerId().equals(user.getId());
+            return UserInfoByBandResponse.of(user, isManager);
+        }).toList();
     }
 }
