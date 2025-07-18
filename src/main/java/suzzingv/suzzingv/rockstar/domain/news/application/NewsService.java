@@ -37,11 +37,12 @@ public class NewsService {
     }
 
     public void createNews(Long bandId, Long scheduleId, NewsType newsType, LocalDateTime oldStartDate, LocalDateTime newStartDate) {
-        String content = toMMDDEHHMM(oldStartDate) + " -> " + toMMDDEHHMM(newStartDate);
+        String content = toMMDDEHHMM(oldStartDate) + "\n-> " + toMMDDEHHMM(newStartDate);
         News news = News.builder()
                 .newsType(newsType)
                 .scheduleId(scheduleId)
                 .bandId(bandId)
+                .title(newsType.getMessage())
                 .content(content)
                 .build();
         newsRepository.save(news);

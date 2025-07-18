@@ -3,6 +3,7 @@ package suzzingv.suzzingv.rockstar.domain.news.presentation.dto.res;
 import lombok.Builder;
 import lombok.Getter;
 import suzzingv.suzzingv.rockstar.domain.news.domain.entity.News;
+import suzzingv.suzzingv.rockstar.domain.news.domain.enums.NewsType;
 
 import static suzzingv.suzzingv.rockstar.global.util.DateUtil.toMMDDHHMM;
 
@@ -12,7 +13,9 @@ public class NewsResponse {
 
     private Long scheduleId;
 
-    private String newsType;
+    private NewsType newsType;
+
+    private String title;
 
     private String content;
 
@@ -21,8 +24,9 @@ public class NewsResponse {
     public static NewsResponse from(News news) {
         return NewsResponse.builder()
                 .scheduleId(news.getScheduleId())
-                .newsType(news.getNewsType().getMessage())
-                .content(news.getContent())
+                .newsType(news.getNewsType())
+                .title(news.getTitle())
+                .content(news.getNewsType().getMessage() + "\n" + news.getContent())
                 .createdDateTime(toMMDDHHMM(news.getCreatedAt()))
                 .build();
     }

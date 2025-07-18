@@ -30,6 +30,9 @@ public class News {
     private NewsType newsType;
 
     @Column(nullable = false)
+    private String title;
+
+    @Column(nullable = false)
     private String content;
 
     @CreationTimestamp
@@ -37,10 +40,11 @@ public class News {
     private LocalDateTime createdAt;
 
     @Builder
-    private News(Long bandId, Long scheduleId, String content, NewsType newsType) {
+    private News(Long bandId, Long scheduleId, String content, NewsType newsType, String title) {
         this.bandId = bandId;
         this.scheduleId = scheduleId;
         this.content = content;
         this.newsType = newsType;
+        this.title = title;
     }
 }
