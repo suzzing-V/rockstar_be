@@ -26,7 +26,7 @@ public class NewsResponse {
                 .scheduleId(news.getScheduleId())
                 .newsType(news.getNewsType())
                 .title(news.getTitle())
-                .content(news.getNewsType().getMessage() + "\n" + news.getContent())
+                .content(news.getContent())
                 .createdDateTime(toMMDDHHMM(news.getCreatedAt()))
                 .build();
     }
