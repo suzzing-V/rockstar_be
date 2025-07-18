@@ -29,6 +29,7 @@ public class NewsService {
                 .newsType(newsType)
                 .scheduleId(scheduleId)
                 .bandId(bandId)
+                .title(newsType.getMessage())
                 .content(content)
                 .build();
         newsRepository.save(news);
