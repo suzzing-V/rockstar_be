@@ -31,7 +31,7 @@ public class BandController {
 
     @GetMapping("/invitationUrl")
     public ResponseEntity<BandNameResponse> findByInvitationUrl(@RequestBody BandInvitationUrlRequest request) {
-        BandNameResponse response = bandService.getInvitationUrl(request.getInvitationUrl());
+        BandNameResponse response = bandService.findBandByInvitationUrl(request.getInvitationUrl());
         return ResponseEntity.ok(response);
     }
 
@@ -63,6 +63,12 @@ public class BandController {
     public ResponseEntity<Page<BandShortInfoResponse>> getListByUser(@AuthenticationPrincipal User user, @RequestParam(defaultValue = "0") int page,
                                                                      @RequestParam(defaultValue = "10") int size) {
         Page<BandShortInfoResponse> response = bandService.getListByUser(user.getId(), page, size);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/url/{bandId}")
+    public ResponseEntity<BandUrlResponse> getListByUser(@PathVariable Long bandId) {
+        BandUrlResponse response = bandService.getInvitationUrl(bandId);
         return ResponseEntity.ok(response);
     }
 }

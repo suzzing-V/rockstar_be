@@ -54,7 +54,7 @@ public class BandService {
         return BandResponse.from(band.getId());
     }
 
-    public BandNameResponse getInvitationUrl(String url) {
+    public BandNameResponse findBandByInvitationUrl(String url) {
         Band band = findByInvitationUrl(url);
         return BandNameResponse.of(band.getId(), band.getName());
     }
@@ -158,5 +158,11 @@ public class BandService {
                 });
 
         return responses;
+    }
+
+    public BandUrlResponse getInvitationUrl(Long bandId) {
+        Band band = findById(bandId);
+
+        return BandUrlResponse.from(band);
     }
 }
