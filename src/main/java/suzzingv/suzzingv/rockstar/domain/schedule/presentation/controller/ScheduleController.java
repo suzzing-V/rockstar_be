@@ -41,9 +41,9 @@ public class ScheduleController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/{scheduleId}")
-    public ResponseEntity<ScheduleResponse> getSchedule(@AuthenticationPrincipal User user, @PathVariable Long scheduleId) {
-        ScheduleResponse response = scheduleService.getSchedule(scheduleId);
+    @GetMapping("/{bandId}/{scheduleId}")
+    public ResponseEntity<ScheduleResponse> getSchedule(@AuthenticationPrincipal User user, @PathVariable Long scheduleId, @PathVariable Long bandId) {
+        ScheduleResponse response = scheduleService.getSchedule(user.getId(), scheduleId, bandId);
         return ResponseEntity.ok(response);
     }
 

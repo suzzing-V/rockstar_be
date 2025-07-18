@@ -138,10 +138,12 @@ public class ScheduleService {
         return schedule;
     }
 
-    public ScheduleResponse getSchedule(Long scheduleId) {
-        Schedule schedule = scheduleRepository.findById(scheduleId)
-                .orElseThrow(() -> new ScheduleException(ErrorCode.SCHEDULE_NOT_FOUND));
-        return ScheduleResponse.from(schedule);
+    public ScheduleResponse getSchedule(Long userId, Long scheduleId, Long bandId) {
+        Band band = bandService.findById(bandId);
+        boolean isManager = band.getManagerId().equals(userId);
+
+        Schedule schedule = findById(scheduleId);
+        return ScheduleResponse.of(schedule,isManager);
     }
 
     public void deleteSchedule(Long scheduleId) {

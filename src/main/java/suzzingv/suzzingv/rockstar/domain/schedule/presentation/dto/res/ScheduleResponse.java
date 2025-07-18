@@ -8,6 +8,8 @@ import suzzingv.suzzingv.rockstar.domain.schedule.domain.Schedule;
 @Builder
 public class ScheduleResponse {
 
+    private Boolean isManager;
+
     private Long scheduleId;
 
     private Integer startYear;
@@ -34,8 +36,9 @@ public class ScheduleResponse {
 
     private String description;
 
-    public static ScheduleResponse from(Schedule schedule) {
+    public static ScheduleResponse of(Schedule schedule, boolean isManager) {
         return ScheduleResponse.builder()
+                .isManager(isManager)
                 .scheduleId(schedule.getId())
                 .startYear(schedule.getStartDate().getYear())
                 .startMonth(schedule.getStartDate().getMonthValue())
