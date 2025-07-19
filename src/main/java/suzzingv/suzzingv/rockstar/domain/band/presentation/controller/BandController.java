@@ -84,4 +84,10 @@ public class BandController {
         BandResponse response = bandService.getBandInfo(bandId);
         return ResponseEntity.ok(response);
     }
+
+    @DeleteMapping("/user/{bandId}")
+    public ResponseEntity<Void> withdrawBand(@AuthenticationPrincipal User user, @PathVariable Long bandId) {
+        bandService.withdrawBand(user.getId(), bandId);
+        return ResponseEntity.noContent().build();
+    }
 }

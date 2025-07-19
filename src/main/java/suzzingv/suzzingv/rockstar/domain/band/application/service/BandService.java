@@ -196,4 +196,17 @@ public class BandService {
 
         return BandResponse.from(band);
     }
+
+    public void withdrawBand(Long userId, Long bandId) {
+        Band band = findById(bandId);
+        canWithdraw(userId, band.getManagerId());
+
+        bandUserRepository.findByBandIdAndUserId(bandId, userId);
+    }
+
+    private static void canWithdraw(Long userId, Long managerId) {
+        if(managerId.equals(userId)) {
+            throw new BandException(ErrorCode.MANAGER_CANT_WITHDRAW);
+        }
+    }
 }
