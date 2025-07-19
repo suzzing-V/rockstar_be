@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import suzzingv.suzzingv.rockstar.domain.user.exception.UserException;
 import suzzingv.suzzingv.rockstar.domain.user.infrastructure.UserRepository;
 import suzzingv.suzzingv.rockstar.global.redis.RedisService;
 import suzzingv.suzzingv.rockstar.global.response.properties.ErrorCode;
@@ -70,16 +71,18 @@ public class JwtService {
         return reissuedRefreshToken;
     }
 
-    public Optional<String> extractRefreshToken(HttpServletRequest request) {
+    public String extractRefreshToken(HttpServletRequest request) {
         return Optional.ofNullable(request.getHeader(refreshHeader))
             .filter(header -> header.startsWith(BEARER))
-            .map(header -> header.replace(BEARER, ""));
+            .map(header -> header.replace(BEARER, ""))
+                .orElseThrow(() -> new UserException(ErrorCode.REFRESH_TOKEN_REQUIRED));
     }
 
     public Optional<String> extractAccessToken(HttpServletRequest request) {
         return Optional.ofNullable(request.getHeader(accessHeader))
             .filter(accessToken -> accessToken.startsWith(BEARER))
-            .map(accessToken -> accessToken.replace(BEARER, ""));
+            .map(accessToken -> accessToken.replace(BEARER, ""))
+                ;
     }
 
     public Optional<String> extractSource(String accessToken) {
@@ -126,5 +129,11 @@ public class JwtService {
             throw new AuthException(ErrorCode.SECURITY_INVALID_REFRESH_TOKEN);
         }
         return redisService.getStrValue(refreshToken);
+    }
+
+    public void invalidTokens(String accessToken, String refreshToken) {
+        isTokenValid(refreshToken);
+        deleteRefreshToken(refreshToken);
+        invalidAccessToken(accessToken);
     }
 }

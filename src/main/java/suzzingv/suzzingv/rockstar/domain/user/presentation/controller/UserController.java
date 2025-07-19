@@ -68,10 +68,19 @@ public class UserController {
 
     @PostMapping("/reissue")
     public ResponseEntity<TokenResponse> reissueToken(HttpServletRequest request, @AuthenticationPrincipal User user) {
-        String refreshToken = jwtService.extractRefreshToken(request)
-                .orElseThrow(() -> new UserException(ErrorCode.REFRESH_TOKEN_REQUIRED));
+        String refreshToken = jwtService.extractRefreshToken(request);
         TokenResponse response = userService.reissueToken(refreshToken);
 
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(HttpServletRequest request) {
+        String accessToken = jwtService.extractAccessToken(request)
+                .orElseThrow(() -> new UserException(ErrorCode.ACCESS_TOKEN_REQUIRED));;
+        String refreshToken = jwtService.extractRefreshToken(request);
+        jwtService.invalidTokens(accessToken, refreshToken);
+
+        return ResponseEntity.ok().build();
     }
 }
