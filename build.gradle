@@ -54,6 +54,9 @@ dependencies {
     // FCM
     implementation 'com.google.firebase:firebase-admin:9.3.0'
     implementation 'junit:junit:4.13.1'
+    //thymeleaf
+        implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+        implementation 'org.springframework.boot:spring-boot-starter-web'
 }
 
 tasks.named('test') {

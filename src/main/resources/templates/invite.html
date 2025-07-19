@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>Rockstar App 딥링크</title>
+    <script>
+        const inviteCode = [[${code}]];
+
+        window.location = `intent://invite/${inviteCode}#Intent;scheme=https;package=com.example.rockstar_app;end`;
+
+        setTimeout(() => {
+            window.location = "https://play.google.com/store/apps/details?id=com.example.rockstar_app";
+        }, 1500);
+    </script>
+</head>
+<body>
+<p>앱을 여는 중입니다... 초대코드: [[${code}]]</p>
+</body>
+</html>
