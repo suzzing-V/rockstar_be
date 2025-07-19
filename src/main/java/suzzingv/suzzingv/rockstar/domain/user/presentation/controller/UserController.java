@@ -83,4 +83,16 @@ public class UserController {
 
         return ResponseEntity.ok().build();
     }
+
+    @DeleteMapping
+    public ResponseEntity<Void> withdraw(@AuthenticationPrincipal User user, HttpServletRequest request) {
+        String accessToken = jwtService.extractAccessToken(request)
+                .orElseThrow(() -> new UserException(ErrorCode.ACCESS_TOKEN_REQUIRED));
+        String refreshToken = jwtService.extractRefreshToken(request);
+        jwtService.invalidTokens(accessToken, refreshToken);
+
+        userService.withdraw(user.getId());
+
+        return ResponseEntity.ok().build();
+    }
 }

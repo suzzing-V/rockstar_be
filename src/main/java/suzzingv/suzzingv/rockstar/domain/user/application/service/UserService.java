@@ -28,7 +28,7 @@ import suzzingv.suzzingv.rockstar.global.sms.MessageUtils;
 import suzzingv.suzzingv.rockstar.global.sms.SmsSender;
 
 import java.time.Duration;
-import java.util.List;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -182,5 +182,16 @@ public class UserService {
             boolean isManager = band.getManagerId().equals(user.getId());
             return UserInfoByBandResponse.of(user, isManager);
         });
+    }
+
+    public void withdraw(Long userId) {
+        // TODO: 일정 기간 지나면 배치로 하드 삭제
+        User user = findUserById(userId);
+        user.changeDeletedAt(LocalDateTime.now());
+
+        bandUserRepository.deleteByUserId(userId);
+        bandService.delegateManagerOfUserId(userId);
+
+        bandService.deleteEntryByUserId(userId);
     }
 }

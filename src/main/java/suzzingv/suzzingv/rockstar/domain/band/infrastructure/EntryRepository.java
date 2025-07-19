@@ -12,4 +12,6 @@ public interface EntryRepository extends JpaRepository<Entry, Long> {
     List<Entry> findByBandId(Long bandId);
 
     void deleteByUserIdAndBandId(Long userId, Long bandId);
+
+    void deleteByUserId(Long userId);
 }

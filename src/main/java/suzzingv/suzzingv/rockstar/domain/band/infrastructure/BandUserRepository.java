@@ -16,4 +16,6 @@ public interface BandUserRepository extends JpaRepository<BandUser, Long> {
     Optional<BandUser> findByBandIdAndUserId(Long bandId, Long userId);
 
     Page<BandUser> findByBandId(Long bandId, Pageable pageable);
+
+    void deleteByUserId(Long userId);
 }

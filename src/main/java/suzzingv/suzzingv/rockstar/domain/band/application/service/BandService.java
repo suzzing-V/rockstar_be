@@ -26,6 +26,7 @@ import suzzingv.suzzingv.rockstar.global.response.properties.ErrorCode;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -164,5 +165,21 @@ public class BandService {
         Band band = findById(bandId);
 
         return BandUrlResponse.from(band);
+    }
+
+    public void deleteEntryByUserId(Long userId) {
+        entryRepository.deleteByUserId(userId);
+    }
+
+    public void delegateManagerOfUserId(Long userId) {
+        bandRepository.findByManagerId(userId).forEach(band -> {
+            Pageable pageable = PageRequest.of(0, 1, Sort.by(Sort.Direction.ASC, "userId"));
+            Optional<BandUser> firstUser = bandUserRepository
+                    .findByBandId(band.getId(), pageable)
+                    .stream()
+                    .findFirst();
+
+            firstUser.ifPresent(bandUser -> band.changeManagerId(bandUser.getUserId()));
+        });
     }
 }

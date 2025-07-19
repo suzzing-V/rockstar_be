@@ -46,4 +46,8 @@ public class Band {
 //        this.introduction = introduction;
         this.invitationUrl = invitationUrl;
     }
+
+    public void changeManagerId(Long userId) {
+        this.managerId = userId;
+    }
 }
