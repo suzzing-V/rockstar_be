@@ -10,4 +10,6 @@ import suzzingv.suzzingv.rockstar.domain.schedule.domain.Schedule;
 public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 
     Page<Schedule> findByBandIdOrderByStartDateDesc(Long bandId, Pageable pageable);
+
+    void deleteByBandId(Long bandId);
 }

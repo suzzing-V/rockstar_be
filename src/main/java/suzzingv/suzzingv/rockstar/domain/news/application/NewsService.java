@@ -55,4 +55,8 @@ public class NewsService {
         Page<News> byBandId = newsRepository.findByBandId(bandId, pageable);
         return byBandId.map(NewsResponse::from);
     }
+
+    public void deleteByBandId(Long bandId) {
+        newsRepository.deleteByBandId(bandId);
+    }
 }

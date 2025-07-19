@@ -20,4 +20,6 @@ public interface BandUserRepository extends JpaRepository<BandUser, Long> {
     void deleteByUserId(Long userId);
 
     void deleteByBandIdAndUserId(Long bandId, Long userId);
+
+    void deleteByBandId(Long bandId);
 }

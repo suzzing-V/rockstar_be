@@ -90,4 +90,10 @@ public class BandController {
         bandService.withdrawBand(user.getId(), bandId);
         return ResponseEntity.noContent().build();
     }
+
+    @DeleteMapping("/{bandId}")
+    public ResponseEntity<Void> deleteBand(@AuthenticationPrincipal User user, @PathVariable Long bandId) {
+        bandService.deleteBand(bandId);
+        return ResponseEntity.noContent().build();
+    }
 }

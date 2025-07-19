@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import suzzingv.suzzingv.rockstar.domain.band.application.service.BandService;
 import suzzingv.suzzingv.rockstar.domain.band.domain.entity.Band;
+import suzzingv.suzzingv.rockstar.domain.band.infrastructure.BandRepository;
 import suzzingv.suzzingv.rockstar.domain.news.application.NewsService;
 import suzzingv.suzzingv.rockstar.domain.news.domain.enums.NewsType;
 import suzzingv.suzzingv.rockstar.domain.schedule.domain.Schedule;
@@ -35,13 +36,12 @@ import java.util.Locale;
 public class ScheduleService {
 
     private final ScheduleRepository scheduleRepository;
-    private final BandService bandService;
     private final NewsService newsService;
+    private final BandRepository bandRepository;
 
     @Transactional(readOnly = true)
     public ScheduleListResponse getByBand(Long userId, Long bandId, int page, int size) {
-        bandService.isBandMember(bandId, userId);
-        Band band = bandService.findById(bandId);
+        Band band = findBandById(bandId);
         boolean isManager = band.getManagerId().equals(userId);
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "startDate"));
@@ -51,9 +51,14 @@ public class ScheduleService {
         return ScheduleListResponse.of(scheduleList, isManager);
     }
 
+    private Band findBandById(Long bandId) {
+        Band band = bandRepository.findById(bandId)
+                .orElseThrow(() -> new ScheduleException(ErrorCode.BAND_NOT_FOUND));
+        return band;
+    }
+
     public ScheduleIdResponse createSchedule(Long userId, ScheduleRequest request) {
-        Band band = bandService.findById(request.getBandId());
-        bandService.isManager(userId, band.getManagerId());
+        Band band = findBandById(request.getBandId());
 
         LocalDateTime startDateTime = startDateToLocalDateTime(request);
         String dayOfWeeks = startDateTime.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.ENGLISH).toUpperCase();
@@ -139,7 +144,7 @@ public class ScheduleService {
     }
 
     public ScheduleResponse getSchedule(Long userId, Long scheduleId, Long bandId) {
-        Band band = bandService.findById(bandId);
+        Band band = findBandById(bandId);
         boolean isManager = band.getManagerId().equals(userId);
 
         Schedule schedule = findById(scheduleId);
@@ -150,5 +155,9 @@ public class ScheduleService {
         Schedule schedule = findById(scheduleId);
         scheduleRepository.delete(schedule);
         newsService.createNews(schedule.getBandId(), schedule.getId(), NewsType.SCHEDULE_DELETED, schedule.getStartDate());
+    }
+
+    public void deleteByBandId(Long bandId) {
+        scheduleRepository.deleteByBandId(bandId);
     }
 }

@@ -20,6 +20,8 @@ import suzzingv.suzzingv.rockstar.domain.band.presentation.dto.req.BandRequest;
 import suzzingv.suzzingv.rockstar.domain.band.presentation.dto.req.EntryAcceptRequest;
 import suzzingv.suzzingv.rockstar.domain.band.presentation.dto.res.*;
 import suzzingv.suzzingv.rockstar.domain.band.util.UrlUtil;
+import suzzingv.suzzingv.rockstar.domain.news.application.NewsService;
+import suzzingv.suzzingv.rockstar.domain.schedule.appplication.ScheduleService;
 import suzzingv.suzzingv.rockstar.domain.user.domain.entity.User;
 import suzzingv.suzzingv.rockstar.domain.user.exception.UserException;
 import suzzingv.suzzingv.rockstar.domain.user.infrastructure.UserRepository;
@@ -40,6 +42,8 @@ public class BandService {
     private final UserRepository userRepository;
     private final EntryRepository entryRepository;
     private final BandUserRepository bandUserRepository;
+    private final NewsService newsService;
+    private final ScheduleService scheduleService;
 
     public BandIdResponse createBand(Long userId, BandRequest request) {
         findUserById(userId);
@@ -208,5 +212,13 @@ public class BandService {
         if(managerId.equals(userId)) {
             throw new BandException(ErrorCode.MANAGER_CANT_WITHDRAW);
         }
+    }
+
+    public void deleteBand(Long bandId) {
+        bandRepository.deleteById(bandId);
+        bandUserRepository.deleteByBandId(bandId);
+        entryRepository.deleteByBandId(bandId);
+        newsService.deleteByBandId(bandId);
+        scheduleService.deleteByBandId(bandId);
     }
 }

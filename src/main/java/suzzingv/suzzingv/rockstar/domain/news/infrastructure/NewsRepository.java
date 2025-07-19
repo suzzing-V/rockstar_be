@@ -9,4 +9,6 @@ import suzzingv.suzzingv.rockstar.domain.news.domain.entity.News;
 @Repository
 public interface NewsRepository extends JpaRepository<News, Long> {
     Page<News> findByBandId(Long bandId, Pageable pageable);
+
+    void deleteByBandId(Long bandId);
 }
