@@ -19,7 +19,6 @@ public enum ErrorCode {
     USER_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "이미 존재하는 유저입니다."),
     NICKNAME_DUPLICATION(HttpStatus.BAD_REQUEST, "이미 사용 중인 닉네임입니다."),
     END_DATE_BEFORE_START_DATE(HttpStatus.BAD_REQUEST, "종료 날짜가 시작 날짜보다 이릅니다."),
-    NOT_BAND_MEMBER(HttpStatus.BAD_REQUEST, "해당 밴드의 멤버가 아닙니다."),
     MANAGER_CANT_WITHDRAW(HttpStatus.BAD_REQUEST, "관리자는 밴드를 탈퇴할 수 없습니다."),
 
     // 401
@@ -32,6 +31,7 @@ public enum ErrorCode {
     MANAGER_REQUIRED(HttpStatus.FORBIDDEN, "매니저 권한이 필요합니다."),
 
     // 404
+    NOT_BAND_MEMBER(HttpStatus.NOT_FOUND, "해당 밴드의 멤버가 아닙니다."),
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 유저입니다."),
     BAND_NOT_FOUND(NOT_FOUND, "존재하지 않는 밴드입니다."),
     SCHEDULE_NOT_FOUND(NOT_FOUND, "존재하지 않는 스케줄입니다."),
