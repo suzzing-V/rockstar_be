@@ -42,7 +42,7 @@ public class SecurityConfig {
                 .requestMatchers("/h2-console/**").permitAll()
                 .requestMatchers("/api/v0/user/login", "api/v0/user/verification-code", "/api/v0/user/reissue").permitAll()
                     .requestMatchers("/api/**").authenticated()
-                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/").permitAll())
+                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/**").permitAll())
             .exceptionHandling(customizer -> customizer
                 .authenticationEntryPoint(customAuthenticationEntryPoint())
                 .accessDeniedHandler(customAccessDeniedHandler()))
