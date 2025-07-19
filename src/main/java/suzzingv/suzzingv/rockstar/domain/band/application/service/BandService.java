@@ -201,7 +201,7 @@ public class BandService {
         Band band = findById(bandId);
         canWithdraw(userId, band.getManagerId());
 
-        bandUserRepository.findByBandIdAndUserId(bandId, userId);
+        bandUserRepository.deleteByBandIdAndUserId(bandId, userId);
     }
 
     private static void canWithdraw(Long userId, Long managerId) {
