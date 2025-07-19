@@ -23,9 +23,9 @@ public class BandController {
     private final BandService bandService;
 
     @PostMapping
-    public ResponseEntity<BandResponse> createBand(@AuthenticationPrincipal User user,
+    public ResponseEntity<BandIdResponse> createBand(@AuthenticationPrincipal User user,
         @RequestBody BandRequest request) {
-        BandResponse response = bandService.createBand(user.getId(), request);
+        BandIdResponse response = bandService.createBand(user.getId(), request);
         bandService.createBandUser(response.getBandId(), user.getId());
         return ResponseEntity.ok(response);
     }
@@ -76,6 +76,12 @@ public class BandController {
     @PatchMapping("/name")
     public ResponseEntity<BandIdResponse> getListByUser(@RequestBody BandNameRequest request) {
         BandIdResponse response = bandService.updateBandName(request);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{bandId}")
+    public ResponseEntity<BandResponse> getBandInfo(@PathVariable Long bandId) {
+        BandResponse response = bandService.getBandInfo(bandId);
         return ResponseEntity.ok(response);
     }
 }

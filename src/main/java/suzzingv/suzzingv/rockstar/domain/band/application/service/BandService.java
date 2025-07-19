@@ -41,7 +41,7 @@ public class BandService {
     private final EntryRepository entryRepository;
     private final BandUserRepository bandUserRepository;
 
-    public BandResponse createBand(Long userId, BandRequest request) {
+    public BandIdResponse createBand(Long userId, BandRequest request) {
         findUserById(userId);
         String invitationUrl = UrlUtil.generateInvitationUrl();
         Band band = Band.builder()
@@ -53,7 +53,7 @@ public class BandService {
             .build();
         bandRepository.save(band);
 
-        return BandResponse.from(band.getId());
+        return BandIdResponse.from(band.getId());
     }
 
     public BandNameResponse findBandByInvitationUrl(String url) {
@@ -189,5 +189,11 @@ public class BandService {
         band.changeName(request.getName());
 
         return BandIdResponse.from(band.getId());
+    }
+
+    public BandResponse getBandInfo(Long bandId) {
+        Band band = findById(bandId);
+
+        return BandResponse.from(band);
     }
 }
