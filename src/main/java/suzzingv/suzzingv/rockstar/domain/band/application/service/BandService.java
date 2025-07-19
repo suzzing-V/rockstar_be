@@ -15,6 +15,7 @@ import suzzingv.suzzingv.rockstar.domain.band.exception.BandException;
 import suzzingv.suzzingv.rockstar.domain.band.infrastructure.BandRepository;
 import suzzingv.suzzingv.rockstar.domain.band.infrastructure.BandUserRepository;
 import suzzingv.suzzingv.rockstar.domain.band.infrastructure.EntryRepository;
+import suzzingv.suzzingv.rockstar.domain.band.presentation.dto.req.BandManagerRequest;
 import suzzingv.suzzingv.rockstar.domain.band.presentation.dto.req.BandNameRequest;
 import suzzingv.suzzingv.rockstar.domain.band.presentation.dto.req.BandRequest;
 import suzzingv.suzzingv.rockstar.domain.band.presentation.dto.req.EntryAcceptRequest;
@@ -220,5 +221,13 @@ public class BandService {
         entryRepository.deleteByBandId(bandId);
         newsService.deleteByBandId(bandId);
         scheduleService.deleteByBandId(bandId);
+    }
+
+    public BandIdResponse updateBandManager(BandManagerRequest request) {
+        Band band = findById(request.getBandId());
+        isBandMember(request.getBandId(), request.getNewManagerId());
+
+        band.changeManagerId(request.getNewManagerId());
+        return BandIdResponse.from(request.getBandId());
     }
 }

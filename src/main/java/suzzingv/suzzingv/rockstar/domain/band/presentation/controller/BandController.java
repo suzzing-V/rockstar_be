@@ -6,10 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import suzzingv.suzzingv.rockstar.domain.band.application.service.BandService;
-import suzzingv.suzzingv.rockstar.domain.band.presentation.dto.req.BandInvitationUrlRequest;
-import suzzingv.suzzingv.rockstar.domain.band.presentation.dto.req.BandNameRequest;
-import suzzingv.suzzingv.rockstar.domain.band.presentation.dto.req.BandRequest;
-import suzzingv.suzzingv.rockstar.domain.band.presentation.dto.req.EntryAcceptRequest;
+import suzzingv.suzzingv.rockstar.domain.band.presentation.dto.req.*;
 import suzzingv.suzzingv.rockstar.domain.band.presentation.dto.res.*;
 import suzzingv.suzzingv.rockstar.domain.user.domain.entity.User;
 
@@ -95,5 +92,11 @@ public class BandController {
     public ResponseEntity<Void> deleteBand(@AuthenticationPrincipal User user, @PathVariable Long bandId) {
         bandService.deleteBand(bandId);
         return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/manager")
+    public ResponseEntity<BandIdResponse> deleteBand(@RequestBody BandManagerRequest request) {
+        BandIdResponse response = bandService.updateBandManager(request);
+        return ResponseEntity.ok(response);
     }
 }
