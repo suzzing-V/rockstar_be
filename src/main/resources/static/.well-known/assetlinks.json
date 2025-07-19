@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.example.rockstar_app",
+      "sha256_cert_fingerprints": [
+        "E9:44:64:29:1A:05:79:77:D2:54:69:79:46:9F:59:F7:B6:D4:73:8C:51:3B:9D:ED:DE:34:66:B5:F7:85:66:B4"
+      ]
+    }
+  }
+]
