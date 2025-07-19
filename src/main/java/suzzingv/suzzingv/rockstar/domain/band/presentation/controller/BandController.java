@@ -7,6 +7,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import suzzingv.suzzingv.rockstar.domain.band.application.service.BandService;
 import suzzingv.suzzingv.rockstar.domain.band.presentation.dto.req.BandInvitationUrlRequest;
+import suzzingv.suzzingv.rockstar.domain.band.presentation.dto.req.BandNameRequest;
 import suzzingv.suzzingv.rockstar.domain.band.presentation.dto.req.BandRequest;
 import suzzingv.suzzingv.rockstar.domain.band.presentation.dto.req.EntryAcceptRequest;
 import suzzingv.suzzingv.rockstar.domain.band.presentation.dto.res.*;
@@ -69,6 +70,12 @@ public class BandController {
     @GetMapping("/url/{bandId}")
     public ResponseEntity<BandUrlResponse> getListByUser(@PathVariable Long bandId) {
         BandUrlResponse response = bandService.getInvitationUrl(bandId);
+        return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping("/name")
+    public ResponseEntity<BandIdResponse> getListByUser(@RequestBody BandNameRequest request) {
+        BandIdResponse response = bandService.updateBandName(request);
         return ResponseEntity.ok(response);
     }
 }

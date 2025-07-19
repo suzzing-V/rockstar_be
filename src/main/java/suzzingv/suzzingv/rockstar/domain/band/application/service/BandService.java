@@ -15,6 +15,7 @@ import suzzingv.suzzingv.rockstar.domain.band.exception.BandException;
 import suzzingv.suzzingv.rockstar.domain.band.infrastructure.BandRepository;
 import suzzingv.suzzingv.rockstar.domain.band.infrastructure.BandUserRepository;
 import suzzingv.suzzingv.rockstar.domain.band.infrastructure.EntryRepository;
+import suzzingv.suzzingv.rockstar.domain.band.presentation.dto.req.BandNameRequest;
 import suzzingv.suzzingv.rockstar.domain.band.presentation.dto.req.BandRequest;
 import suzzingv.suzzingv.rockstar.domain.band.presentation.dto.req.EntryAcceptRequest;
 import suzzingv.suzzingv.rockstar.domain.band.presentation.dto.res.*;
@@ -181,5 +182,12 @@ public class BandService {
 
             firstUser.ifPresent(bandUser -> band.changeManagerId(bandUser.getUserId()));
         });
+    }
+
+    public BandIdResponse updateBandName(BandNameRequest request) {
+        Band band = findById(request.getBandId());
+        band.changeName(request.getName());
+
+        return BandIdResponse.from(band.getId());
     }
 }

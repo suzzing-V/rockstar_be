@@ -50,4 +50,8 @@ public class Band {
     public void changeManagerId(Long userId) {
         this.managerId = userId;
     }
+
+    public void changeName(String name) {
+        this.name = name;
+    }
 }
