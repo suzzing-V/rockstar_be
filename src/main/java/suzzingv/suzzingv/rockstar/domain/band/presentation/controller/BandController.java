@@ -35,7 +35,7 @@ public class BandController {
 
     @PostMapping("/entry/{bandId}")
     public ResponseEntity<BandNameResponse> applyForEntry(@AuthenticationPrincipal User user, @PathVariable Long bandId) {
-        BandNameResponse response = bandService.applyForEntry(user.getId(), bandId);
+        BandNameResponse response = bandService.applyForEntry(user, bandId);
         return ResponseEntity.ok(response);
     }
 

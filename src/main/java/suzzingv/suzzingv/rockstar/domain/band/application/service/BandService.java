@@ -22,6 +22,7 @@ import suzzingv.suzzingv.rockstar.domain.band.presentation.dto.req.EntryAcceptRe
 import suzzingv.suzzingv.rockstar.domain.band.presentation.dto.res.*;
 import suzzingv.suzzingv.rockstar.domain.band.util.UrlUtil;
 import suzzingv.suzzingv.rockstar.domain.news.application.NewsService;
+import suzzingv.suzzingv.rockstar.domain.notification.application.NotificationService;
 import suzzingv.suzzingv.rockstar.domain.schedule.appplication.ScheduleService;
 import suzzingv.suzzingv.rockstar.domain.user.domain.entity.User;
 import suzzingv.suzzingv.rockstar.domain.user.exception.UserException;
@@ -45,6 +46,7 @@ public class BandService {
     private final BandUserRepository bandUserRepository;
     private final NewsService newsService;
     private final ScheduleService scheduleService;
+    private final NotificationService notificationService;
 
     public BandIdResponse createBand(Long userId, BandRequest request) {
         findUserById(userId);
@@ -66,15 +68,17 @@ public class BandService {
         return BandNameResponse.of(band.getId(), band.getName());
     }
 
-    public BandNameResponse applyForEntry(Long userId, Long bandId) {
+    public BandNameResponse applyForEntry(User user, Long bandId) {
         Band band = findById(bandId);
-        findUserById(userId);
+        findUserById(user.getId());
 
         Entry entry = Entry.builder()
             .bandId(bandId)
-            .userId(userId)
+            .userId(user.getId())
             .build();
         entryRepository.save(entry);
+
+        notificationService.createEntryApplyNotification(band, user);
         return BandNameResponse.of(bandId, band.getName());
     }
 
@@ -101,21 +105,21 @@ public class BandService {
     }
 
     public EntryAcceptResponse acceptEntry(Long managerId, EntryAcceptRequest request) {
-        Long bandId = request.getBandId();
-        Long userId = request.getUserId();
+        Band band = findById(request.getBandId());
+        User user = findUserById(request.getUserId());
 
-        isManager(managerId, bandId);
+        isManager(managerId, band.getId());
         BandUser bandUser = BandUser.builder()
-                .userId(userId)
-                .bandId(bandId)
+                .userId(user.getId())
+                .bandId(band.getId())
                 .build();
         bandUserRepository.save(bandUser);
 
-        entryRepository.deleteByUserIdAndBandId(userId, bandId);
+        entryRepository.deleteByUserIdAndBandId(user.getId(), band.getId());
 
-        // 푸시 큐 구독
+        notificationService.createEntryAcceptNotification(band, user);
 
-        return EntryAcceptResponse.from(userId);
+        return EntryAcceptResponse.from(user.getId());
     }
 
     public void deleteEntry(Long managerId, EntryAcceptRequest request) {

@@ -13,6 +13,7 @@ import suzzingv.suzzingv.rockstar.domain.band.domain.entity.Band;
 import suzzingv.suzzingv.rockstar.domain.band.infrastructure.BandRepository;
 import suzzingv.suzzingv.rockstar.domain.news.application.NewsService;
 import suzzingv.suzzingv.rockstar.domain.news.domain.enums.NewsType;
+import suzzingv.suzzingv.rockstar.domain.notification.application.NotificationService;
 import suzzingv.suzzingv.rockstar.domain.schedule.domain.Schedule;
 import suzzingv.suzzingv.rockstar.domain.schedule.exception.ScheduleException;
 import suzzingv.suzzingv.rockstar.domain.schedule.infrastructure.ScheduleRepository;
@@ -38,6 +39,7 @@ public class ScheduleService {
     private final ScheduleRepository scheduleRepository;
     private final NewsService newsService;
     private final BandRepository bandRepository;
+    private final NotificationService notificationService;
 
     @Transactional(readOnly = true)
     public ScheduleListResponse getByBand(Long userId, Long bandId, int page, int size) {
@@ -78,6 +80,7 @@ public class ScheduleService {
         scheduleRepository.save(schedule);
 
         newsService.createNews(band.getId(), schedule.getId(), NewsType.SCHEDULE_CREATED, startDateTime);
+        notificationService.createScheduleCreationNotification(band, schedule.getId(), startDateTime);
         return ScheduleIdResponse.from(schedule.getId());
     }
 
@@ -133,7 +136,9 @@ public class ScheduleService {
         schedule.changeStartDate(newStartDateTime);
         schedule.changeEndDate(endDateTime);
 
+        Band band = findBandById(schedule.getBandId());
         newsService.createNews(schedule.getBandId(), schedule.getId(), NewsType.SCHEDULE_CHANGED, oldDateTime, newStartDateTime);
+        notificationService.createScheduleUpdateNotification(band, scheduleId, oldDateTime);
         return ScheduleIdResponse.from(scheduleId);
     }
 
@@ -155,6 +160,9 @@ public class ScheduleService {
         Schedule schedule = findById(scheduleId);
         scheduleRepository.delete(schedule);
         newsService.createNews(schedule.getBandId(), schedule.getId(), NewsType.SCHEDULE_DELETED, schedule.getStartDate());
+
+        Band band = findBandById(schedule.getBandId());
+        notificationService.createScheduleDeleteNotification(band, scheduleId, schedule.getStartDate());
     }
 
     public void deleteByBandId(Long bandId) {
