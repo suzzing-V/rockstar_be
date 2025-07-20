@@ -1,6 +1,10 @@
 package suzzingv.suzzingv.rockstar.domain.notification.application;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import suzzingv.suzzingv.rockstar.domain.band.domain.entity.Band;
@@ -8,9 +12,12 @@ import suzzingv.suzzingv.rockstar.domain.band.infrastructure.BandUserRepository;
 import suzzingv.suzzingv.rockstar.domain.notification.domain.entity.Notification;
 import suzzingv.suzzingv.rockstar.domain.notification.domain.entity.NotificationUser;
 import suzzingv.suzzingv.rockstar.domain.notification.domain.enums.NotificationType;
+import suzzingv.suzzingv.rockstar.domain.notification.exception.NotificationException;
 import suzzingv.suzzingv.rockstar.domain.notification.infrastructure.NotificationRepository;
 import suzzingv.suzzingv.rockstar.domain.notification.infrastructure.NotificationUserRepository;
+import suzzingv.suzzingv.rockstar.domain.notification.presentation.dto.res.NotificationResponse;
 import suzzingv.suzzingv.rockstar.domain.user.domain.entity.User;
+import suzzingv.suzzingv.rockstar.global.response.properties.ErrorCode;
 
 import java.time.LocalDateTime;
 
@@ -114,5 +121,23 @@ public class NotificationService {
                 .build();
         notificationUserRepository.save(notificationUser);
         // TODO: 푸시알림 보내기
+    }
+
+    @Transactional(readOnly = true)
+    public Page<NotificationResponse> getNotificationsByUser(Long userId, int page, int size) {
+        PageRequest pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        Page<NotificationResponse> respnoses = notificationUserRepository.findByUserId(userId, pageable)
+                .map(notificationUser -> {
+                    Notification notification = findById(notificationUser.getNotificationId());
+
+                    return NotificationResponse.from(notification);
+                });
+
+        return respnoses;
+    }
+
+    private Notification findById(Long notificationId) {
+        return notificationRepository.findById(notificationId)
+                .orElseThrow(() -> new NotificationException(ErrorCode.NOTIFICATION_NOT_FOUND));
     }
 }
