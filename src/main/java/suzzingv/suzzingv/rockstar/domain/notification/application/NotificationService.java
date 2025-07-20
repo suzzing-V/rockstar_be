@@ -76,7 +76,7 @@ public class NotificationService {
         Notification notification = Notification.builder()
                 .title(band.getName())
                 .content(content)
-                .contentId(scheduleId)
+                .contentId(band.getId())
                 .notificationType(NotificationType.SCHEDULE_DELETED)
                 .build();
         notificationRepository.save(notification);
