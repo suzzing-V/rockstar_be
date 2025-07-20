@@ -12,6 +12,8 @@ import java.time.LocalDateTime;
 @Builder
 public class NotificationResponse {
 
+    private Long notificationUserId;
+
     private Long contentId;
 
     private String title;
@@ -30,7 +32,7 @@ public class NotificationResponse {
 
     private Long secondAgo;
 
-    public static NotificationResponse of(Notification notification, boolean isRead) {
+    public static NotificationResponse of(Notification notification, boolean isRead, Long notificationUserId) {
         LocalDateTime createdAt = notification.getCreatedAt();
         int dayDiff = DateUtil.getDaysAgo(createdAt);
         long hourDiff = dayDiff == 0? DateUtil.getHoursAgo(createdAt) : 0;
@@ -47,6 +49,7 @@ public class NotificationResponse {
                 .minuteAgo(minuteDiff)
                 .secondAgo(secondDiff)
                 .isRead(isRead)
+                .notificationUserId(notificationUserId)
                 .build();
     }
 }

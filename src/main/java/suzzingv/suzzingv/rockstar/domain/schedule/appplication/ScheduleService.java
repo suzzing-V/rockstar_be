@@ -161,7 +161,7 @@ public class ScheduleService {
         newsService.createNews(schedule.getBandId(), schedule.getId(), NewsType.SCHEDULE_DELETED, schedule.getStartDate());
 
         Band band = findBandById(schedule.getBandId());
-        notificationService.createScheduleDeleteNotification(band, scheduleId, schedule.getStartDate());
+        notificationService.createScheduleDeleteNotification(band, schedule.getStartDate());
     }
 
     public void deleteByBandId(Long bandId) {

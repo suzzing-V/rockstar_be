@@ -35,4 +35,8 @@ public class NotificationUser {
         this.notificationId = notificationId;
         this.isRead = false;
     }
+
+    public void read() {
+        this.isRead = true;
+    }
 }

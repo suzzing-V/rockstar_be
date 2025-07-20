@@ -14,6 +14,7 @@ import suzzingv.suzzingv.rockstar.domain.notification.domain.enums.NotificationT
 import suzzingv.suzzingv.rockstar.domain.notification.exception.NotificationException;
 import suzzingv.suzzingv.rockstar.domain.notification.infrastructure.NotificationRepository;
 import suzzingv.suzzingv.rockstar.domain.notification.infrastructure.NotificationUserRepository;
+import suzzingv.suzzingv.rockstar.domain.notification.presentation.dto.res.NotificationUserIdResponse;
 import suzzingv.suzzingv.rockstar.domain.notification.presentation.dto.res.NotificationResponse;
 import suzzingv.suzzingv.rockstar.domain.user.domain.entity.User;
 import suzzingv.suzzingv.rockstar.global.response.properties.ErrorCode;
@@ -70,7 +71,7 @@ public class NotificationService {
         createNotificationOfMembers(band, notification);
     }
 
-    public void createScheduleDeleteNotification(Band band, Long scheduleId, LocalDateTime startDate) {
+    public void createScheduleDeleteNotification(Band band, LocalDateTime startDate) {
         String content = startDate.getMonthValue() + "월 " + startDate.getDayOfMonth() + "일의 일정이 삭제되었습니다.";
 
         Notification notification = Notification.builder()
@@ -129,7 +130,7 @@ public class NotificationService {
                 .map(notificationUser -> {
                     Notification notification = findById(notificationUser.getNotificationId());
 
-                    return NotificationResponse.of(notification, notificationUser.getIsRead());
+                    return NotificationResponse.of(notification, notificationUser.getIsRead(), notificationUser.getId());
                 });
 
         return respnoses;
@@ -138,5 +139,13 @@ public class NotificationService {
     private Notification findById(Long notificationId) {
         return notificationRepository.findById(notificationId)
                 .orElseThrow(() -> new NotificationException(ErrorCode.NOTIFICATION_NOT_FOUND));
+    }
+
+    public NotificationUserIdResponse read(Long notificationUserId) {
+        NotificationUser notificationUser = notificationUserRepository.findById(notificationUserId)
+                .orElseThrow(() -> new NotificationException(ErrorCode.NOTIFICATION_USER_NOT_FOUND));
+        notificationUser.read();
+
+        return NotificationUserIdResponse.from(notificationUserId);
     }
 }
