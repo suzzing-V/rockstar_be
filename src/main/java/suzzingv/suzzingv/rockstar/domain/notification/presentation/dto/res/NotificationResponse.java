@@ -36,8 +36,8 @@ public class NotificationResponse {
         LocalDateTime createdAt = notification.getCreatedAt();
         int dayDiff = DateUtil.getDaysAgo(createdAt);
         long hourDiff = dayDiff == 0? DateUtil.getHoursAgo(createdAt) : 0;
-        long minuteDiff = hourDiff == 0? DateUtil.getMinutesAgo(createdAt) : 0;
-        long secondDiff = minuteDiff == 0? DateUtil.getSecondsAgo(createdAt) : 0;
+        long minuteDiff = dayDiff == 0 && hourDiff == 0? DateUtil.getMinutesAgo(createdAt) : 0;
+        long secondDiff = dayDiff == 0 && hourDiff == 0 && minuteDiff == 0? DateUtil.getSecondsAgo(createdAt) : 0;
 
         return NotificationResponse.builder()
                 .content(notification.getContent())
