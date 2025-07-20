@@ -24,6 +24,8 @@ public class NotificationUser {
 
     private Long notificationId;
 
+    private Boolean isRead;
+
     @CreationTimestamp
     private LocalDateTime createdAt;
 
@@ -31,5 +33,6 @@ public class NotificationUser {
     private NotificationUser(Long userId, Long notificationId) {
         this.userId = userId;
         this.notificationId = notificationId;
+        this.isRead = false;
     }
 }

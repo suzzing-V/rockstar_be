@@ -3,7 +3,6 @@ package suzzingv.suzzingv.rockstar.domain.notification.application;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -130,7 +129,7 @@ public class NotificationService {
                 .map(notificationUser -> {
                     Notification notification = findById(notificationUser.getNotificationId());
 
-                    return NotificationResponse.from(notification);
+                    return NotificationResponse.of(notification, notificationUser.getIsRead());
                 });
 
         return respnoses;

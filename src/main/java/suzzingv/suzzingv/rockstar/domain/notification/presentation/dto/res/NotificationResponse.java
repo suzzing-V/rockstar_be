@@ -20,6 +20,8 @@ public class NotificationResponse {
 
     private NotificationType notificationType;
 
+    private Boolean isRead;
+
     private Integer daysAgo;
 
     private Long hourAgo;
@@ -28,7 +30,7 @@ public class NotificationResponse {
 
     private Long secondAgo;
 
-    public static NotificationResponse from(Notification notification) {
+    public static NotificationResponse of(Notification notification, boolean isRead) {
         LocalDateTime createdAt = notification.getCreatedAt();
         int dayDiff = DateUtil.getDaysAgo(createdAt);
         long hourDiff = dayDiff == 0? DateUtil.getHoursAgo(createdAt) : 0;
@@ -44,6 +46,7 @@ public class NotificationResponse {
                 .hourAgo(hourDiff)
                 .minuteAgo(minuteDiff)
                 .secondAgo(secondDiff)
+                .isRead(isRead)
                 .build();
     }
 }
