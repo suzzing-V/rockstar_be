@@ -5,12 +5,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import retrofit2.http.Path;
 import suzzingv.suzzingv.rockstar.domain.schedule.appplication.ScheduleService;
 import suzzingv.suzzingv.rockstar.domain.schedule.presentation.dto.req.ScheduleRequest;
 import suzzingv.suzzingv.rockstar.domain.schedule.presentation.dto.res.ScheduleIdResponse;
 import suzzingv.suzzingv.rockstar.domain.schedule.presentation.dto.res.ScheduleListResponse;
 import suzzingv.suzzingv.rockstar.domain.schedule.presentation.dto.res.ScheduleResponse;
-import suzzingv.suzzingv.rockstar.domain.schedule.presentation.dto.res.ScheduleShortResponse;
 import suzzingv.suzzingv.rockstar.domain.user.domain.entity.User;
 
 @RestController
@@ -42,8 +42,8 @@ public class ScheduleController {
     }
 
     @GetMapping("/{bandId}/{scheduleId}")
-    public ResponseEntity<ScheduleResponse> getSchedule(@AuthenticationPrincipal User user, @PathVariable Long scheduleId, @PathVariable Long bandId) {
-        ScheduleResponse response = scheduleService.getSchedule(user.getId(), scheduleId, bandId);
+    public ResponseEntity<ScheduleResponse> getScheduleOfBand(@AuthenticationPrincipal User user, @PathVariable Long scheduleId, @PathVariable Long bandId) {
+        ScheduleResponse response = scheduleService.getScheduleOfBand(user.getId(), scheduleId, bandId);
         return ResponseEntity.ok(response);
     }
 
@@ -53,4 +53,9 @@ public class ScheduleController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/{scheduleId}")
+    public ResponseEntity<ScheduleResponse> getSchedule(@PathVariable Long scheduleId) {
+        ScheduleResponse response = scheduleService.getSchedule(scheduleId);
+        return ResponseEntity.ok(response);
+    }
 }

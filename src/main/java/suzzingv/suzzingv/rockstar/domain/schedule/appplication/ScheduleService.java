@@ -8,7 +8,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import suzzingv.suzzingv.rockstar.domain.band.application.service.BandService;
 import suzzingv.suzzingv.rockstar.domain.band.domain.entity.Band;
 import suzzingv.suzzingv.rockstar.domain.band.infrastructure.BandRepository;
 import suzzingv.suzzingv.rockstar.domain.news.application.NewsService;
@@ -148,7 +147,7 @@ public class ScheduleService {
         return schedule;
     }
 
-    public ScheduleResponse getSchedule(Long userId, Long scheduleId, Long bandId) {
+    public ScheduleResponse getScheduleOfBand(Long userId, Long scheduleId, Long bandId) {
         Band band = findBandById(bandId);
         boolean isManager = band.getManagerId().equals(userId);
 
@@ -167,5 +166,11 @@ public class ScheduleService {
 
     public void deleteByBandId(Long bandId) {
         scheduleRepository.deleteByBandId(bandId);
+    }
+
+    public ScheduleResponse getSchedule(Long scheduleId) {
+        Schedule schedule = findById(scheduleId);
+
+        return ScheduleResponse.from(schedule);
     }
 }

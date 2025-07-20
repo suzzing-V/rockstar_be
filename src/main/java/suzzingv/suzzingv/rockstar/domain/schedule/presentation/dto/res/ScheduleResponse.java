@@ -54,4 +54,22 @@ public class ScheduleResponse {
                 .description(schedule.getDescription())
                 .build();
     }
+
+    public static ScheduleResponse from(Schedule schedule) {
+        return ScheduleResponse.builder()
+                .scheduleId(schedule.getId())
+                .startYear(schedule.getStartDate().getYear())
+                .startMonth(schedule.getStartDate().getMonthValue())
+                .startDay(schedule.getStartDate().getDayOfMonth())
+                .startHour(schedule.getStartDate().getHour())
+                .startMinute(schedule.getStartDate().getMinute())
+                .endYear(schedule.getEndDate().getYear())
+                .endMonth(schedule.getEndDate().getMonthValue())
+                .endDay(schedule.getEndDate().getDayOfMonth())
+                .endHour(schedule.getEndDate().getHour())
+                .endMinute(schedule.getEndDate().getMinute())
+                .dayOfWeek(schedule.getDayOfWeek())
+                .description(schedule.getDescription())
+                .build();
+    }
 }
