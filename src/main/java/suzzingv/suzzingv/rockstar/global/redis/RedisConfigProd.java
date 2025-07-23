@@ -15,7 +15,7 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 import java.util.List;
 
 @Configuration
-@Profile("prod")
+//@Profile("prod")
 public class RedisConfigProd {
 
     @Value("${spring.data.redis.cluster.nodes}")
