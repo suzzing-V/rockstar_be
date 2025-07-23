@@ -51,7 +51,7 @@ public class UserService {
         checkUserByNew(request);
         String verificationCode = VerificationCodeGenerator.getCode();
         sendCode(verificationCode, request.getPhoneNum());
-//        saveCode(request.getPhoneNum(), verificationCode);
+        saveCode(request.getPhoneNum(), verificationCode);
         return VerificationCodeResponse.builder()
             .code(verificationCode)
             .build();
