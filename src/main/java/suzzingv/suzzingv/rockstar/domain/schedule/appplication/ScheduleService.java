@@ -165,6 +165,17 @@ public class ScheduleService {
         Band band = findBandById(schedule.getBandId());
         newsService.createNews(schedule.getBandId(), schedule.getId(), NewsType.SCHEDULE_CHANGED, oldDateTime, newStartDateTime);
         notificationService.createScheduleUpdateNotification(band, scheduleId, oldDateTime);
+
+        bandUserRepository.findByBandId(band.getId())
+                .forEach(bandUser -> {
+                    UserFcm userFcm = getUserFcm(bandUser);
+                    if (userFcm.getFcmToken() != null) {
+                        fcmService.sendPush(
+                                userFcm.getFcmToken(),
+                                band.getName(),
+                                oldDateTime.toString() + " 일정이 수정되었습니다."
+                        );
+                    }});
         return ScheduleIdResponse.from(scheduleId);
     }
 
@@ -189,6 +200,16 @@ public class ScheduleService {
 
         Band band = findBandById(schedule.getBandId());
         notificationService.createScheduleDeleteNotification(band, schedule.getStartDate());
+        bandUserRepository.findByBandId(band.getId())
+                .forEach(bandUser -> {
+                    UserFcm userFcm = getUserFcm(bandUser);
+                    if (userFcm.getFcmToken() != null) {
+                        fcmService.sendPush(
+                                userFcm.getFcmToken(),
+                                band.getName(),
+                                schedule.getStartDate().toString() + " 일정이 삭제되었습니다."
+                        );
+                    }});
     }
 
     public void deleteByBandId(Long bandId) {
