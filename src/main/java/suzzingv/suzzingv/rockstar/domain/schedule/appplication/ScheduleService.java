@@ -45,7 +45,6 @@ public class ScheduleService {
     private final NewsService newsService;
     private final BandRepository bandRepository;
     private final NotificationService notificationService;
-//    private final UserService userService;
     private final FcmService fcmService;
     private final BandUserRepository bandUserRepository;
     private final UserFcmRepository userFcmRepository;
@@ -98,7 +97,7 @@ public class ScheduleService {
             fcmService.sendPush(
                     userFcm.getFcmToken(),
                     band.getName(),
-                    schedule.getStartDate().toString() + "에 일정이 생성되었습니다."
+                    schedule.getStartDate().getMonthValue() + "월 " + schedule.getStartDate().getDayOfMonth() + "일에 일정이 생성되었습니다."
             );
         }});
         return ScheduleIdResponse.from(schedule.getId());
@@ -173,7 +172,7 @@ public class ScheduleService {
                         fcmService.sendPush(
                                 userFcm.getFcmToken(),
                                 band.getName(),
-                                oldDateTime.toString() + " 일정이 수정되었습니다."
+                                oldDateTime.getMonthValue() + "월 " + oldDateTime.getDayOfMonth() + "일의 일정이 변경되었습니다."
                         );
                     }});
         return ScheduleIdResponse.from(scheduleId);
@@ -207,7 +206,7 @@ public class ScheduleService {
                         fcmService.sendPush(
                                 userFcm.getFcmToken(),
                                 band.getName(),
-                                schedule.getStartDate().toString() + " 일정이 삭제되었습니다."
+                                schedule.getStartDate().getMonthValue() + "월 " + schedule.getStartDate().getDayOfMonth() + "일 일정이 삭제되었습니다."
                         );
                     }});
     }
