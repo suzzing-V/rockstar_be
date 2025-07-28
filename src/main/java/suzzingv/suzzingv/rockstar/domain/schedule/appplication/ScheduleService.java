@@ -21,6 +21,10 @@ import suzzingv.suzzingv.rockstar.domain.schedule.presentation.dto.res.ScheduleI
 import suzzingv.suzzingv.rockstar.domain.schedule.presentation.dto.res.ScheduleListResponse;
 import suzzingv.suzzingv.rockstar.domain.schedule.presentation.dto.res.ScheduleResponse;
 import suzzingv.suzzingv.rockstar.domain.schedule.presentation.dto.res.ScheduleShortResponse;
+import suzzingv.suzzingv.rockstar.domain.user.application.service.UserService;
+import suzzingv.suzzingv.rockstar.domain.user.domain.entity.UserFcm;
+import suzzingv.suzzingv.rockstar.domain.user.infrastructure.UserFcmRepository;
+import suzzingv.suzzingv.rockstar.global.firebase.FcmService;
 import suzzingv.suzzingv.rockstar.global.response.properties.ErrorCode;
 
 import java.time.LocalDate;
@@ -39,6 +43,8 @@ public class ScheduleService {
     private final NewsService newsService;
     private final BandRepository bandRepository;
     private final NotificationService notificationService;
+    private final UserService userService;
+    private final FcmService fcmService;
 
     @Transactional(readOnly = true)
     public ScheduleListResponse getByBand(Long userId, Long bandId, int page, int size) {
@@ -80,6 +86,15 @@ public class ScheduleService {
 
         newsService.createNews(band.getId(), schedule.getId(), NewsType.SCHEDULE_CREATED, startDateTime);
         notificationService.createScheduleCreationNotification(band, schedule.getId(), startDateTime);
+
+        UserFcm userFcm = userService.getUserFcm(userId);
+        if (userFcm.getFcmToken() != null) {
+            fcmService.sendPush(
+                    userFcm.getFcmToken(),
+                    band.getName(),
+                    schedule.getStartDate().toString() + "에 일정이 생성되었습니다."
+            );
+        }
         return ScheduleIdResponse.from(schedule.getId());
     }
 

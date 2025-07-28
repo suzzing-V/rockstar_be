@@ -207,12 +207,17 @@ public class UserService {
     }
 
     public UserUpdateResponse updateFcmToken(Long userId, FcmRequest request) {
-        UserFcm userFcm = userFcmRepository.findByUserId(userId)
-                .orElseThrow(() -> new UserException(ErrorCode.USER_FCM_NOT_FOUND));
+        UserFcm userFcm = getUserFcm(userId);
         userFcm.changeFcmToken(request.getFcmToken());
 
         return UserUpdateResponse.builder()
                 .userId(userId)
                 .build();
+    }
+
+    public UserFcm getUserFcm(Long userId) {
+        UserFcm userFcm = userFcmRepository.findByUserId(userId)
+                .orElseThrow(() -> new UserException(ErrorCode.USER_FCM_NOT_FOUND));
+        return userFcm;
     }
 }
