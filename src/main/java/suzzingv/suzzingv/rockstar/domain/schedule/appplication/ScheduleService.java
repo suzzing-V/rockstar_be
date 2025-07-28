@@ -9,7 +9,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import suzzingv.suzzingv.rockstar.domain.band.domain.entity.Band;
+import suzzingv.suzzingv.rockstar.domain.band.domain.entity.BandUser;
 import suzzingv.suzzingv.rockstar.domain.band.infrastructure.BandRepository;
+import suzzingv.suzzingv.rockstar.domain.band.infrastructure.BandUserRepository;
 import suzzingv.suzzingv.rockstar.domain.news.application.NewsService;
 import suzzingv.suzzingv.rockstar.domain.news.domain.enums.NewsType;
 import suzzingv.suzzingv.rockstar.domain.notification.application.NotificationService;
@@ -45,6 +47,7 @@ public class ScheduleService {
     private final NotificationService notificationService;
     private final UserService userService;
     private final FcmService fcmService;
+    private final BandUserRepository bandUserRepository;
 
     @Transactional(readOnly = true)
     public ScheduleListResponse getByBand(Long userId, Long bandId, int page, int size) {
@@ -87,14 +90,16 @@ public class ScheduleService {
         newsService.createNews(band.getId(), schedule.getId(), NewsType.SCHEDULE_CREATED, startDateTime);
         notificationService.createScheduleCreationNotification(band, schedule.getId(), startDateTime);
 
-        UserFcm userFcm = userService.getUserFcm(userId);
+        bandUserRepository.findByBandId(band.getId())
+                .forEach(bandUser -> {
+                    UserFcm userFcm = userService.getUserFcm(bandUser.getUserId());
         if (userFcm.getFcmToken() != null) {
             fcmService.sendPush(
                     userFcm.getFcmToken(),
                     band.getName(),
                     schedule.getStartDate().toString() + "에 일정이 생성되었습니다."
             );
-        }
+        }});
         return ScheduleIdResponse.from(schedule.getId());
     }
 
