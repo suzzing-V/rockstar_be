@@ -45,9 +45,10 @@ public class ScheduleService {
     private final NewsService newsService;
     private final BandRepository bandRepository;
     private final NotificationService notificationService;
-    private final UserService userService;
+//    private final UserService userService;
     private final FcmService fcmService;
     private final BandUserRepository bandUserRepository;
+    private final UserFcmRepository userFcmRepository;
 
     @Transactional(readOnly = true)
     public ScheduleListResponse getByBand(Long userId, Long bandId, int page, int size) {
@@ -92,8 +93,8 @@ public class ScheduleService {
 
         bandUserRepository.findByBandId(band.getId())
                 .forEach(bandUser -> {
-                    UserFcm userFcm = userService.getUserFcm(bandUser.getUserId());
-        if (userFcm.getFcmToken() != null) {
+                    UserFcm userFcm = getUserFcm(bandUser);
+                    if (userFcm.getFcmToken() != null) {
             fcmService.sendPush(
                     userFcm.getFcmToken(),
                     band.getName(),
@@ -101,6 +102,12 @@ public class ScheduleService {
             );
         }});
         return ScheduleIdResponse.from(schedule.getId());
+    }
+
+    private UserFcm getUserFcm(BandUser bandUser) {
+        UserFcm userFcm = userFcmRepository.findByUserId(bandUser.getUserId())
+                .orElseThrow(() -> new ScheduleException(ErrorCode.USER_FCM_NOT_FOUND));
+        return userFcm;
     }
 
     private static long getDayDiff(LocalDateTime startDateTime, LocalDateTime endDateTime) {
