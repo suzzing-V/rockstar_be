@@ -1,4 +1,6 @@
 name: CI
+env:
+  FIREBASE_CREDENTIALS_BASE64: ${{ secrets.FIREBASE_CREDENTIALS_BASE64 }}
 on:
   push:
     branches:
