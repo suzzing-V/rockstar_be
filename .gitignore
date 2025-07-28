@@ -43,3 +43,6 @@ application*.yml
 docker-compose.yml
 
 init.sql
+
+# Firebase 서비스 계정 키 숨기기
+src/main/resources/firebase/*.json

@@ -13,10 +13,13 @@ import suzzingv.suzzingv.rockstar.domain.band.domain.entity.Band;
 import suzzingv.suzzingv.rockstar.domain.band.domain.entity.BandUser;
 import suzzingv.suzzingv.rockstar.domain.band.infrastructure.BandUserRepository;
 import suzzingv.suzzingv.rockstar.domain.user.domain.entity.User;
+import suzzingv.suzzingv.rockstar.domain.user.domain.entity.UserFcm;
 import suzzingv.suzzingv.rockstar.domain.user.domain.enums.Role;
 import suzzingv.suzzingv.rockstar.domain.user.exception.UserException;
+import suzzingv.suzzingv.rockstar.domain.user.infrastructure.UserFcmRepository;
 import suzzingv.suzzingv.rockstar.domain.user.infrastructure.UserRepository;
 import suzzingv.suzzingv.rockstar.domain.user.presentation.dto.req.CodeRequest;
+import suzzingv.suzzingv.rockstar.domain.user.presentation.dto.req.FcmRequest;
 import suzzingv.suzzingv.rockstar.domain.user.presentation.dto.req.NicknameRequest;
 import suzzingv.suzzingv.rockstar.domain.user.presentation.dto.req.PhoneNumRequest;
 import suzzingv.suzzingv.rockstar.domain.user.presentation.dto.res.*;
@@ -43,6 +46,7 @@ public class UserService {
     private final RedisService redisService;
     private final JwtService jwtService;
     private final BandUserRepository bandUserRepository;
+    private final UserFcmRepository  userFcmRepository;
 
     private static final String VERIFICATION_PREFIX = "verify_";
     private static final Duration VERIFICATION_DURATION = Duration.ofMinutes(1);
@@ -96,7 +100,14 @@ public class UserService {
                 .phoneNum(request.getPhoneNum())
                 .role(Role.USER)
                 .build();
-            return userRepository.save(user);
+            User save = userRepository.save(user);
+
+            UserFcm userFcm = UserFcm.builder()
+                    .userId(save.getId())
+                    .build();
+            userFcmRepository.save(userFcm);
+
+            return save;
         } else {
             return getByPhoneNum(request);
         }
@@ -193,5 +204,15 @@ public class UserService {
         bandService.delegateManagerOfUserId(userId);
 
         bandService.deleteEntryByUserId(userId);
+    }
+
+    public UserUpdateResponse updateFcmToken(Long userId, FcmRequest request) {
+        UserFcm userFcm = userFcmRepository.findByUserId(userId)
+                .orElseThrow(() -> new UserException(ErrorCode.USER_FCM_NOT_FOUND));
+        userFcm.changeFcmToken(request.getFcmToken());
+
+        return UserUpdateResponse.builder()
+                .userId(userId)
+                .build();
     }
 }

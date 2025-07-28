@@ -11,13 +11,12 @@ import suzzingv.suzzingv.rockstar.domain.user.application.service.UserService;
 import suzzingv.suzzingv.rockstar.domain.user.domain.entity.User;
 import suzzingv.suzzingv.rockstar.domain.user.exception.UserException;
 import suzzingv.suzzingv.rockstar.domain.user.presentation.dto.req.CodeRequest;
+import suzzingv.suzzingv.rockstar.domain.user.presentation.dto.req.FcmRequest;
 import suzzingv.suzzingv.rockstar.domain.user.presentation.dto.req.NicknameRequest;
 import suzzingv.suzzingv.rockstar.domain.user.presentation.dto.req.PhoneNumRequest;
 import suzzingv.suzzingv.rockstar.domain.user.presentation.dto.res.*;
 import suzzingv.suzzingv.rockstar.global.response.properties.ErrorCode;
 import suzzingv.suzzingv.rockstar.global.security.jwt.service.JwtService;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -37,6 +36,12 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@RequestBody CodeRequest request) {
         LoginResponse response = userService.login(request);
+        return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping("/fcm")
+    public ResponseEntity<UserUpdateResponse> updateFcmToken(@AuthenticationPrincipal User user, @RequestBody FcmRequest request) {
+        UserUpdateResponse response = userService.updateFcmToken(user.getId(), request);
         return ResponseEntity.ok(response);
     }
 
