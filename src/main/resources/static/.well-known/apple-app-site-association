@@ -1,11 +1,14 @@
 {
-  "applinks": {
-    "apps": [],
-    "details": [
-      {
-        "appID": "9XXPUJRM2Z.com.suzzingv.rockstar",
-        "paths": ["/invite/*"]
-      }
-    ]
-  }
+    applinks: {
+        details: [
+            {
+                appIDs: ["9XXPUJRM2Z.com.suzzingv.rockstar"],
+                components: [
+               		{
+                	/: "/invite/*"
+                    }
+                ]
+            }
+        ]
+    }
 }
