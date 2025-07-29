@@ -23,7 +23,6 @@ import suzzingv.suzzingv.rockstar.domain.schedule.presentation.dto.res.ScheduleI
 import suzzingv.suzzingv.rockstar.domain.schedule.presentation.dto.res.ScheduleListResponse;
 import suzzingv.suzzingv.rockstar.domain.schedule.presentation.dto.res.ScheduleResponse;
 import suzzingv.suzzingv.rockstar.domain.schedule.presentation.dto.res.ScheduleShortResponse;
-import suzzingv.suzzingv.rockstar.domain.user.application.service.UserService;
 import suzzingv.suzzingv.rockstar.domain.user.domain.entity.UserFcm;
 import suzzingv.suzzingv.rockstar.domain.user.infrastructure.UserFcmRepository;
 import suzzingv.suzzingv.rockstar.global.firebase.FcmService;
@@ -94,10 +93,12 @@ public class ScheduleService {
                 .forEach(bandUser -> {
                     UserFcm userFcm = getUserFcm(bandUser);
                     if (userFcm.getFcmToken() != null) {
-            fcmService.sendPush(
+            fcmService.sendScheduleInfoPush(
                     userFcm.getFcmToken(),
                     band.getName(),
-                    schedule.getStartDate().getMonthValue() + "월 " + schedule.getStartDate().getDayOfMonth() + "일에 일정이 생성되었습니다."
+                    schedule.getStartDate().getMonthValue() + "월 " + schedule.getStartDate().getDayOfMonth() + "일에 일정이 생성되었습니다.",
+                    band.getId(),
+                    schedule.getId()
             );
         }});
         return ScheduleIdResponse.from(schedule.getId());
@@ -169,10 +170,12 @@ public class ScheduleService {
                 .forEach(bandUser -> {
                     UserFcm userFcm = getUserFcm(bandUser);
                     if (userFcm.getFcmToken() != null) {
-                        fcmService.sendPush(
+                        fcmService.sendScheduleInfoPush(
                                 userFcm.getFcmToken(),
                                 band.getName(),
-                                oldDateTime.getMonthValue() + "월 " + oldDateTime.getDayOfMonth() + "일의 일정이 변경되었습니다."
+                                oldDateTime.getMonthValue() + "월 " + oldDateTime.getDayOfMonth() + "일의 일정이 변경되었습니다.",
+                                band.getId(),
+                                scheduleId
                         );
                     }});
         return ScheduleIdResponse.from(scheduleId);
@@ -203,10 +206,11 @@ public class ScheduleService {
                 .forEach(bandUser -> {
                     UserFcm userFcm = getUserFcm(bandUser);
                     if (userFcm.getFcmToken() != null) {
-                        fcmService.sendPush(
+                        fcmService.sendScheduleListPush(
                                 userFcm.getFcmToken(),
                                 band.getName(),
-                                schedule.getStartDate().getMonthValue() + "월 " + schedule.getStartDate().getDayOfMonth() + "일 일정이 삭제되었습니다."
+                                schedule.getStartDate().getMonthValue() + "월 " + schedule.getStartDate().getDayOfMonth() + "일 일정이 삭제되었습니다.",
+                                band.getId()
                         );
                     }});
     }
