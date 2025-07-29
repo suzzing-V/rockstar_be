@@ -220,4 +220,11 @@ public class UserService {
                 .orElseThrow(() -> new UserException(ErrorCode.USER_FCM_NOT_FOUND));
         return userFcm;
     }
+
+    public UserInfoResponse findByNickname(String nickname) {
+        User user = userRepository.findByNickName(nickname)
+                .orElseThrow(() -> new UserException(ErrorCode.NICKNAME_DUPLICATION));
+
+        return UserInfoResponse.from(user);
+    }
 }
