@@ -9,12 +9,15 @@ import suzzingv.suzzingv.rockstar.domain.band.domain.entity.Band;
 import suzzingv.suzzingv.rockstar.domain.invitation.domain.entity.Invitation;
 import suzzingv.suzzingv.rockstar.domain.invitation.infrastructure.InvitationRepository;
 import suzzingv.suzzingv.rockstar.domain.invitation.presentation.dto.InvitationRequest;
+import suzzingv.suzzingv.rockstar.domain.invitation.presentation.dto.res.InvitationInfoResponse;
 import suzzingv.suzzingv.rockstar.domain.invitation.presentation.dto.res.InvitationResponse;
 import suzzingv.suzzingv.rockstar.domain.invitation.presentation.dto.res.InvitationUserInfoResponse;
 import suzzingv.suzzingv.rockstar.domain.notification.application.NotificationService;
 import suzzingv.suzzingv.rockstar.domain.user.application.service.UserService;
 import suzzingv.suzzingv.rockstar.domain.user.domain.entity.User;
 import suzzingv.suzzingv.rockstar.global.firebase.FcmService;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -60,5 +63,15 @@ public class InvitationService {
     private boolean isInvited(Long bandId, User user) {
         return invitationRepository.findByBandIdAndUserId(bandId, user.getId())
                 .isPresent();
+    }
+
+    public List<InvitationInfoResponse> getInvitationList(Long userId) {
+        List<InvitationInfoResponse> responses = invitationRepository.findByUserId(userId)
+                .stream().map(invitation -> {
+                    Band band = bandService.findById(invitation.getBandId());
+                    return InvitationInfoResponse.from(band);
+                }).toList();
+
+        return responses;
     }
 }

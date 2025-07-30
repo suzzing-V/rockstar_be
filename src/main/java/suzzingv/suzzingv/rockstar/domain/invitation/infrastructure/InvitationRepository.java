@@ -1,5 +1,6 @@
 package suzzingv.suzzingv.rockstar.domain.invitation.infrastructure;
 
+import ch.qos.logback.core.testUtil.MockInitialContext;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import suzzingv.suzzingv.rockstar.domain.invitation.domain.entity.Invitation;
@@ -19,4 +20,6 @@ public interface InvitationRepository extends JpaRepository<Invitation, Long> {
     void deleteByUserId(Long userId);
 
     void deleteByBandId(Long bandId);
+
+    List<Invitation> findByUserId(Long userId);
 }
