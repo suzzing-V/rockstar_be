@@ -66,7 +66,7 @@ public class FcmService {
     public void sendInvitationPush(String title, Band band, Long userId) {
         UserFcm userFcm = userFcmRepository.findByUserId(userId).orElse(null);
 
-        if (userFcm == null) {
+        if (userFcm == null || userFcm.getFcmToken() == null) {
             log.warn("UserFcm not found for userId: " + userId);
             return;
         }
