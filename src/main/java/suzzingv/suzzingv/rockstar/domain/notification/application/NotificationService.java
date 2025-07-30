@@ -85,23 +85,22 @@ public class NotificationService {
         createNotificationOfMembers(band, notification);
     }
 
-    public void createEntryApplyNotification(Band band, User user) {
-        String content = user.getNickName() + "님이 가입을 신청했습니다.";
+    public void createInvitationNotification(Band band, User user) {
+        String content = band.getName() + " 밴드에서 초대를 보냈습니다.";
 
         Notification notification = Notification.builder()
                 .title(band.getName())
                 .content(content)
                 .contentId(user.getId())
-                .notificationType(NotificationType.ENTRY_APPLICATION)
+                .notificationType(NotificationType.INVITATION)
                 .build();
         notificationRepository.save(notification);
 
         NotificationUser notificationUser = NotificationUser.builder()
                 .notificationId(notification.getId())
-                .userId(band.getManagerId())
+                .userId(user.getId())
                 .build();
         notificationUserRepository.save(notificationUser);
-        // TODO: 푸시알림 보내기
     }
 
     public void createEntryAcceptNotification(Band band, User user) {

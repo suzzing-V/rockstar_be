@@ -216,8 +216,14 @@ public class UserService {
     }
 
     public UserFcm getUserFcm(Long userId) {
-        UserFcm userFcm = userFcmRepository.findByUserId(userId)
-                .orElseThrow(() -> new UserException(ErrorCode.USER_FCM_NOT_FOUND));
+        UserFcm userFcm = userFcmRepository.findByUserId(userId).orElse(null);
+
+        if (userFcm != null) {
+            log.info(String.valueOf(userFcm));
+        } else {
+            log.warn("UserFcm not found for userId: " + userId);
+        }
+
         return userFcm;
     }
 

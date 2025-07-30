@@ -1,0 +1,52 @@
+package suzzingv.suzzingv.rockstar.domain.invitation.application.service;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import suzzingv.suzzingv.rockstar.domain.band.application.service.BandService;
+import suzzingv.suzzingv.rockstar.domain.band.domain.entity.Band;
+import suzzingv.suzzingv.rockstar.domain.invitation.domain.entity.Invitation;
+import suzzingv.suzzingv.rockstar.domain.invitation.infrastructure.InvitationRepository;
+import suzzingv.suzzingv.rockstar.domain.invitation.presentation.dto.InvitationRequest;
+import suzzingv.suzzingv.rockstar.domain.invitation.presentation.dto.res.InvitationResponse;
+import suzzingv.suzzingv.rockstar.domain.notification.application.NotificationService;
+import suzzingv.suzzingv.rockstar.domain.user.application.service.UserService;
+import suzzingv.suzzingv.rockstar.domain.user.domain.entity.User;
+import suzzingv.suzzingv.rockstar.domain.user.domain.entity.UserFcm;
+import suzzingv.suzzingv.rockstar.domain.user.infrastructure.UserFcmRepository;
+import suzzingv.suzzingv.rockstar.global.firebase.FcmService;
+
+@Service
+@RequiredArgsConstructor
+@Slf4j
+@Transactional
+public class InvitationService {
+
+    private final InvitationRepository invitationRepository;
+    private final NotificationService notificationService;
+    private final BandService bandService;
+    private final UserService userService;
+    private final FcmService fcmService;
+
+    public InvitationResponse invite(InvitationRequest request) {
+        log.info("시작");
+        Band band = bandService.findById(request.getBandId());
+        User user = userService.findUserById(request.getUserId());
+
+        Invitation invitation = Invitation.builder()
+                .bandId(request.getBandId())
+                .userId(request.getUserId())
+                .build();
+        invitationRepository.save(invitation);
+
+        notificationService.createInvitationNotification(band, user);
+
+        fcmService.sendInvitationPush(band.getName(), band, user.getId());
+        log.info("fcm 후");
+        return InvitationResponse.builder()
+                .bandId(band.getId())
+                .userId(user.getId())
+                .build();
+    }
+}

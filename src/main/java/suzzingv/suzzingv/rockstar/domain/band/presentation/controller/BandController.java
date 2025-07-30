@@ -27,35 +27,35 @@ public class BandController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/invitationUrl")
-    public ResponseEntity<BandNameResponse> findByInvitationUrl(@RequestBody BandInvitationUrlRequest request) {
-        BandNameResponse response = bandService.findBandByInvitationUrl(request.getInvitationUrl());
-        return ResponseEntity.ok(response);
-    }
-
-    @PostMapping("/entry/{bandId}")
-    public ResponseEntity<BandNameResponse> applyForEntry(@AuthenticationPrincipal User user, @PathVariable Long bandId) {
-        BandNameResponse response = bandService.applyForEntry(user, bandId);
-        return ResponseEntity.ok(response);
-    }
-
-    @GetMapping("/entry/{bandId}")
-    public ResponseEntity<List<EntryApplicationResponse>> getEntryApplicationList(@AuthenticationPrincipal User user, @PathVariable Long bandId) {
-        List<EntryApplicationResponse> response = bandService.getEntryApplicationList(user.getId(), bandId);
-        return ResponseEntity.ok(response);
-    }
-
-    @PostMapping("/entry/accept")
-    public ResponseEntity<EntryAcceptResponse> acceptEntry(@AuthenticationPrincipal User user, @RequestBody EntryAcceptRequest request) {
-        EntryAcceptResponse response = bandService.acceptEntry(user.getId(), request);
-        return ResponseEntity.ok(response);
-    }
-
-    @DeleteMapping("/entry")
-    public ResponseEntity<Void> deleteEntry(@AuthenticationPrincipal User user, @RequestBody EntryAcceptRequest request) {
-        bandService.deleteEntry(user.getId(), request);
-        return ResponseEntity.ok().build();
-    }
+//    @GetMapping("/invitationUrl")
+//    public ResponseEntity<BandNameResponse> findByInvitationUrl(@RequestBody BandInvitationUrlRequest request) {
+//        BandNameResponse response = bandService.findBandByInvitationUrl(request.getInvitationUrl());
+//        return ResponseEntity.ok(response);
+//    }
+//
+//    @PostMapping("/entry/{bandId}")
+//    public ResponseEntity<BandNameResponse> applyForEntry(@AuthenticationPrincipal User user, @PathVariable Long bandId) {
+//        BandNameResponse response = bandService.applyForEntry(user, bandId);
+//        return ResponseEntity.ok(response);
+//    }
+//
+//    @GetMapping("/entry/{bandId}")
+//    public ResponseEntity<List<EntryApplicationResponse>> getEntryApplicationList(@AuthenticationPrincipal User user, @PathVariable Long bandId) {
+//        List<EntryApplicationResponse> response = bandService.getEntryApplicationList(user.getId(), bandId);
+//        return ResponseEntity.ok(response);
+//    }
+//
+//    @PostMapping("/entry/accept")
+//    public ResponseEntity<EntryAcceptResponse> acceptEntry(@AuthenticationPrincipal User user, @RequestBody EntryAcceptRequest request) {
+//        EntryAcceptResponse response = bandService.acceptEntry(user.getId(), request);
+//        return ResponseEntity.ok(response);
+//    }
+//
+//    @DeleteMapping("/entry")
+//    public ResponseEntity<Void> deleteEntry(@AuthenticationPrincipal User user, @RequestBody EntryAcceptRequest request) {
+//        bandService.deleteEntry(user.getId(), request);
+//        return ResponseEntity.ok().build();
+//    }
 
     @GetMapping("/user")
     public ResponseEntity<Page<BandShortInfoResponse>> getListByUser(@AuthenticationPrincipal User user, @RequestParam(defaultValue = "0") int page,

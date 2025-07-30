@@ -10,11 +10,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import suzzingv.suzzingv.rockstar.domain.band.domain.entity.Band;
 import suzzingv.suzzingv.rockstar.domain.band.domain.entity.BandUser;
-import suzzingv.suzzingv.rockstar.domain.band.domain.entity.Entry;
+import suzzingv.suzzingv.rockstar.domain.invitation.domain.entity.Invitation;
 import suzzingv.suzzingv.rockstar.domain.band.exception.BandException;
 import suzzingv.suzzingv.rockstar.domain.band.infrastructure.BandRepository;
 import suzzingv.suzzingv.rockstar.domain.band.infrastructure.BandUserRepository;
-import suzzingv.suzzingv.rockstar.domain.band.infrastructure.EntryRepository;
+import suzzingv.suzzingv.rockstar.domain.invitation.infrastructure.InvitationRepository;
 import suzzingv.suzzingv.rockstar.domain.band.presentation.dto.req.BandManagerRequest;
 import suzzingv.suzzingv.rockstar.domain.band.presentation.dto.req.BandNameRequest;
 import suzzingv.suzzingv.rockstar.domain.band.presentation.dto.req.BandRequest;
@@ -42,7 +42,7 @@ public class BandService {
 
     private final BandRepository bandRepository;
     private final UserRepository userRepository;
-    private final EntryRepository entryRepository;
+    private final InvitationRepository invitationRepository;
     private final BandUserRepository bandUserRepository;
     private final NewsService newsService;
     private final ScheduleService scheduleService;
@@ -72,13 +72,13 @@ public class BandService {
         Band band = findById(bandId);
         findUserById(user.getId());
 
-        Entry entry = Entry.builder()
+        Invitation invitation = Invitation.builder()
             .bandId(bandId)
             .userId(user.getId())
             .build();
-        entryRepository.save(entry);
+        invitationRepository.save(invitation);
 
-        notificationService.createEntryApplyNotification(band, user);
+        notificationService.createInvitationNotification(band, user);
         return BandNameResponse.of(bandId, band.getName());
     }
 
@@ -94,10 +94,10 @@ public class BandService {
         Band band = findById(bandId);
         isManager(userId, band.getManagerId());
 
-        List<Entry> entries = entryRepository.findByBandId(bandId);
+        List<Invitation> entries = invitationRepository.findByBandId(bandId);
         List<EntryApplicationResponse> responses = entries.stream()
-                .map(entry -> {
-                    User user = findUserById(entry.getUserId());
+                .map(invitation -> {
+                    User user = findUserById(invitation.getUserId());
                     return EntryApplicationResponse.of(userId, user.getNickName());
                 })
                 .collect(Collectors.toList());
@@ -115,7 +115,7 @@ public class BandService {
                 .build();
         bandUserRepository.save(bandUser);
 
-        entryRepository.deleteByUserIdAndBandId(user.getId(), band.getId());
+        invitationRepository.deleteByUserIdAndBandId(user.getId(), band.getId());
 
         notificationService.createEntryAcceptNotification(band, user);
 
@@ -127,7 +127,7 @@ public class BandService {
         Long userId = request.getUserId();
 
         isManager(managerId, bandId);
-        entryRepository.deleteByUserIdAndBandId(userId, bandId);
+        invitationRepository.deleteByUserIdAndBandId(userId, bandId);
     }
 
     public void isManager(Long userId, Long managerId) {
@@ -178,7 +178,7 @@ public class BandService {
     }
 
     public void deleteEntryByUserId(Long userId) {
-        entryRepository.deleteByUserId(userId);
+        invitationRepository.deleteByUserId(userId);
     }
 
     public void delegateManagerOfUserId(Long userId) {
@@ -222,7 +222,7 @@ public class BandService {
     public void deleteBand(Long bandId) {
         bandRepository.deleteById(bandId);
         bandUserRepository.deleteByBandId(bandId);
-        entryRepository.deleteByBandId(bandId);
+        invitationRepository.deleteByBandId(bandId);
         newsService.deleteByBandId(bandId);
         scheduleService.deleteByBandId(bandId);
     }

@@ -1,4 +1,4 @@
-package suzzingv.suzzingv.rockstar.domain.band.domain.entity;
+package suzzingv.suzzingv.rockstar.domain.invitation.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -9,8 +9,8 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Table(name = "entry_TB")
-public class Entry {
+@Table(name = "invitation_TB")
+public class Invitation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,7 +23,7 @@ public class Entry {
     private Long userId;
 
     @Builder
-    private Entry(Long bandId, long userId) {
+    private Invitation(Long bandId, long userId) {
         this.bandId = bandId;
         this.userId = userId;
     }

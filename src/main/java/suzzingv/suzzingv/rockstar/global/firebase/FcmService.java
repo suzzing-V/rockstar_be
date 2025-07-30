@@ -4,10 +4,19 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import suzzingv.suzzingv.rockstar.domain.band.domain.entity.Band;
+import suzzingv.suzzingv.rockstar.domain.user.domain.entity.UserFcm;
+import suzzingv.suzzingv.rockstar.domain.user.infrastructure.UserFcmRepository;
 
 @Service
+@RequiredArgsConstructor
+@Slf4j
 public class FcmService {
+
+    private final UserFcmRepository userFcmRepository;
 
     public void sendScheduleInfoPush(String fcmToken, String title, String body, Long bandId, Long scheduleId) {
         if (fcmToken == null || fcmToken.isEmpty()) return;
@@ -43,6 +52,35 @@ public class FcmService {
                         .build())
                 .putData("type", "SCHEDULE_LIST")
                 .putData("bandId", String.valueOf(bandId))
+                .putData("timestamp", String.valueOf(System.currentTimeMillis()))
+                .build();
+
+        try {
+            String response = FirebaseMessaging.getInstance().send(message);
+            System.out.println("✅ 푸시 전송 완료: " + response);
+        } catch (FirebaseMessagingException e) {
+            System.err.println("❌ 푸시 전송 실패: " + e.getMessage());
+        }
+    }
+
+    public void sendInvitationPush(String title, Band band, Long userId) {
+        UserFcm userFcm = userFcmRepository.findByUserId(userId).orElse(null);
+
+        if (userFcm == null) {
+            log.warn("UserFcm not found for userId: " + userId);
+            return;
+        }
+
+        String fcmToken = userFcm.getFcmToken();
+        String body = band.getName() + " 밴드에서 초대를 보냈습니다.";
+        Message message = Message.builder()
+                .setToken(fcmToken)
+                .setNotification(Notification.builder()
+                        .setTitle(title)
+                        .setBody(body)
+                        .build())
+                .putData("type", "INVITATION")
+                .putData("userId", String.valueOf(userId))
                 .putData("timestamp", String.valueOf(System.currentTimeMillis()))
                 .build();
 
