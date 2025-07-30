@@ -103,23 +103,22 @@ public class NotificationService {
         notificationUserRepository.save(notificationUser);
     }
 
-    public void createEntryAcceptNotification(Band band, User user) {
-        String content = "가입 신청이 수락되었습니다.";
+    public void createInvitationAcceptNotification(Band band, User user) {
+        String content = user.getNickName() + "님이 초대를 수락하였습니다.";
 
         Notification notification = Notification.builder()
                 .title(band.getName())
                 .content(content)
                 .contentId(band.getId())
-                .notificationType(NotificationType.ENTRY_ACCEPTED)
+                .notificationType(NotificationType.INVITATION_ACCEPT)
                 .build();
         notificationRepository.save(notification);
 
         NotificationUser notificationUser = NotificationUser.builder()
                 .notificationId(notification.getId())
-                .userId(user.getId())
+                .userId(band.getManagerId())
                 .build();
         notificationUserRepository.save(notificationUser);
-        // TODO: 푸시알림 보내기
     }
 
     @Transactional(readOnly = true)

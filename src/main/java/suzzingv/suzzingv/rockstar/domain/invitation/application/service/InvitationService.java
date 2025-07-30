@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import suzzingv.suzzingv.rockstar.domain.band.application.service.BandService;
 import suzzingv.suzzingv.rockstar.domain.band.domain.entity.Band;
+import suzzingv.suzzingv.rockstar.domain.band.domain.entity.BandUser;
+import suzzingv.suzzingv.rockstar.domain.band.infrastructure.BandUserRepository;
 import suzzingv.suzzingv.rockstar.domain.invitation.domain.entity.Invitation;
 import suzzingv.suzzingv.rockstar.domain.invitation.infrastructure.InvitationRepository;
 import suzzingv.suzzingv.rockstar.domain.invitation.presentation.dto.InvitationRequest;
@@ -30,6 +32,7 @@ public class InvitationService {
     private final BandService bandService;
     private final UserService userService;
     private final FcmService fcmService;
+    private final BandUserRepository bandUserRepository;
 
     public InvitationResponse invite(InvitationRequest request) {
         log.info("시작");
@@ -73,5 +76,29 @@ public class InvitationService {
                 }).toList();
 
         return responses;
+    }
+
+    public InvitationResponse acceptInvitation(Long userId, Long bandId) {
+        BandUser bandUser = BandUser.builder()
+                .userId(userId)
+                .bandId(bandId)
+                .build();
+        bandUserRepository.save(bandUser);
+
+        invitationRepository.deleteByUserIdAndBandId(userId, bandId);
+
+        Band band = bandService.findById(bandId);
+        User user = userService.findUserById(userId);
+        notificationService.createInvitationAcceptNotification(band, user);
+
+        fcmService.sendInvitationAcceptPush(user, band);
+
+        return InvitationResponse.of(userId, bandId);
+    }
+
+    public InvitationResponse rejectInvitation(Long userId, Long bandId) {
+        invitationRepository.deleteByUserIdAndBandId(userId, bandId);
+
+        return InvitationResponse.of(userId, bandId);
     }
 }

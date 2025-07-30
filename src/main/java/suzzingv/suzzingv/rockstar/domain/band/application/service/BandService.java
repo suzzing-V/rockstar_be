@@ -117,7 +117,7 @@ public class BandService {
 
         invitationRepository.deleteByUserIdAndBandId(user.getId(), band.getId());
 
-        notificationService.createEntryAcceptNotification(band, user);
+        notificationService.createInvitationAcceptNotification(band, user);
 
         return EntryAcceptResponse.from(user.getId());
     }

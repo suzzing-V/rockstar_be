@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import suzzingv.suzzingv.rockstar.domain.band.domain.entity.Band;
+import suzzingv.suzzingv.rockstar.domain.user.domain.entity.User;
 import suzzingv.suzzingv.rockstar.domain.user.domain.entity.UserFcm;
 import suzzingv.suzzingv.rockstar.domain.user.infrastructure.UserFcmRepository;
 
@@ -81,6 +82,35 @@ public class FcmService {
                         .build())
                 .putData("type", "INVITATION")
                 .putData("userId", String.valueOf(userId))
+                .putData("timestamp", String.valueOf(System.currentTimeMillis()))
+                .build();
+
+        try {
+            String response = FirebaseMessaging.getInstance().send(message);
+            System.out.println("✅ 푸시 전송 완료: " + response);
+        } catch (FirebaseMessagingException e) {
+            System.err.println("❌ 푸시 전송 실패: " + e.getMessage());
+        }
+    }
+
+    public void sendInvitationAcceptPush(User user, Band band) {
+        UserFcm userFcm = userFcmRepository.findByUserId(band.getManagerId()).orElse(null);
+
+        if (userFcm == null || userFcm.getFcmToken() == null) {
+            log.warn("UserFcm not found for userId: " + user.getId());
+            return;
+        }
+
+        String fcmToken = userFcm.getFcmToken();
+        String body = user.getNickName() + "님이 초대를 수락했습니다.";
+        Message message = Message.builder()
+                .setToken(fcmToken)
+                .setNotification(Notification.builder()
+                        .setTitle(band.getName())
+                        .setBody(body)
+                        .build())
+                .putData("type", "INVITATION_ACCEPT")
+                .putData("bandId", String.valueOf(band.getId()))
                 .putData("timestamp", String.valueOf(System.currentTimeMillis()))
                 .build();
 

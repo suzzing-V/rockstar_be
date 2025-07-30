@@ -37,4 +37,16 @@ public class InvitationController {
         List<InvitationInfoResponse> response = invitationService.getInvitationList(user.getId());
         return ResponseEntity.ok(response);
     }
+
+    @PostMapping("/accept/{bandId}")
+    public ResponseEntity<InvitationResponse> acceptInvitation(@AuthenticationPrincipal User user, @PathVariable Long bandId) {
+        InvitationResponse response = invitationService.acceptInvitation(user.getId(), bandId);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/reject/{bandId}")
+    public ResponseEntity<InvitationResponse> rejectInvitation(@AuthenticationPrincipal User user, @PathVariable Long bandId) {
+        InvitationResponse response = invitationService.rejectInvitation(user.getId(), bandId);
+        return ResponseEntity.ok(response);
+    }
 }
