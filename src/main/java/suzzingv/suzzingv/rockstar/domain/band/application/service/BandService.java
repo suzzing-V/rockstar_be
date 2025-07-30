@@ -151,9 +151,13 @@ public class BandService {
             .orElseThrow(() -> new BandException(ErrorCode.BAND_NOT_FOUND));
     }
 
-    public void isBandMember(Long bandId, Long userId) {
+    public void checkBandMember(Long bandId, Long userId) {
         bandUserRepository.findByBandIdAndUserId(bandId, userId)
                 .orElseThrow(() -> new BandException(ErrorCode.NOT_BAND_MEMBER));
+    }
+
+    public boolean isBandMember(Long bandId, Long userId) {
+        return bandUserRepository.findByBandIdAndUserId(bandId, userId).isPresent();
     }
 
     @Transactional(readOnly = true)
@@ -229,7 +233,7 @@ public class BandService {
 
     public BandIdResponse updateBandManager(BandManagerRequest request) {
         Band band = findById(request.getBandId());
-        isBandMember(request.getBandId(), request.getNewManagerId());
+        checkBandMember(request.getBandId(), request.getNewManagerId());
 
         band.changeManagerId(request.getNewManagerId());
         return BandIdResponse.from(request.getBandId());

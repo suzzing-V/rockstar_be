@@ -10,11 +10,10 @@ import suzzingv.suzzingv.rockstar.domain.invitation.domain.entity.Invitation;
 import suzzingv.suzzingv.rockstar.domain.invitation.infrastructure.InvitationRepository;
 import suzzingv.suzzingv.rockstar.domain.invitation.presentation.dto.InvitationRequest;
 import suzzingv.suzzingv.rockstar.domain.invitation.presentation.dto.res.InvitationResponse;
+import suzzingv.suzzingv.rockstar.domain.invitation.presentation.dto.res.InvitationUserInfoResponse;
 import suzzingv.suzzingv.rockstar.domain.notification.application.NotificationService;
 import suzzingv.suzzingv.rockstar.domain.user.application.service.UserService;
 import suzzingv.suzzingv.rockstar.domain.user.domain.entity.User;
-import suzzingv.suzzingv.rockstar.domain.user.domain.entity.UserFcm;
-import suzzingv.suzzingv.rockstar.domain.user.infrastructure.UserFcmRepository;
 import suzzingv.suzzingv.rockstar.global.firebase.FcmService;
 
 @Service
@@ -48,5 +47,18 @@ public class InvitationService {
                 .bandId(band.getId())
                 .userId(user.getId())
                 .build();
+    }
+
+    public InvitationUserInfoResponse searchUser(Long bandId, String nickname) {
+        User user = userService.findByNickname(nickname);
+        boolean isInvited = isInvited(bandId, user);
+        boolean isBandMember = bandService.isBandMember(bandId, user.getId());
+
+        return InvitationUserInfoResponse.of(user, !isInvited && !isBandMember);
+    }
+
+    private boolean isInvited(Long bandId, User user) {
+        return invitationRepository.findByBandIdAndUserId(bandId, user.getId())
+                .isPresent();
     }
 }

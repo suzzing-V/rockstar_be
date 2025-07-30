@@ -5,11 +5,14 @@ import org.springframework.stereotype.Repository;
 import suzzingv.suzzingv.rockstar.domain.invitation.domain.entity.Invitation;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface InvitationRepository extends JpaRepository<Invitation, Long> {
 
     List<Invitation> findByBandId(Long bandId);
+
+    Optional<Invitation> findByBandIdAndUserId(Long bandId, Long userId);
 
     void deleteByUserIdAndBandId(Long userId, Long bandId);
 

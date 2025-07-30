@@ -227,10 +227,10 @@ public class UserService {
         return userFcm;
     }
 
-    public UserInfoResponse findByNickname(String nickname) {
+    public User findByNickname(String nickname) {
         User user = userRepository.findByNickName(nickname)
                 .orElseThrow(() -> new UserException(ErrorCode.NICKNAME_DUPLICATION));
 
-        return UserInfoResponse.from(user);
+        return user;
     }
 }
