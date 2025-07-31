@@ -4,6 +4,7 @@ import jakarta.annotation.PostConstruct;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import java.time.LocalDateTime;
 import java.util.TimeZone;
 
 @SpringBootApplication
@@ -16,6 +17,6 @@ public class RockstarApplication {
     @PostConstruct
     public void init() {
         TimeZone.setDefault(TimeZone.getTimeZone("Asia/Seoul"));
-        System.out.println("✅ TimeZone set to Asia/Seoul");
+        System.out.println("✅ TimeZone set to Asia/Seoul" + LocalDateTime.now());
     }
 }
