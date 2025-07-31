@@ -4,4 +4,6 @@ WORKDIR /app
 
 COPY build/libs/*.jar app.jar
 
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENV TZ=Asia/Seoul
+
+ENTRYPOINT ["java", "-Duser.timezone=Asia/Seoul", "-jar", "app.jar"]
