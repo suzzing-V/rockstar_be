@@ -54,9 +54,10 @@ public class UserService {
     public VerificationCodeResponse sendVerificationCode(PhoneNumRequest request) {
         checkUserByNew(request);
         String verificationCode = VerificationCodeGenerator.getCode();
-        sendCode(verificationCode, request.getPhoneNum());
-        if(!request.getPhoneNum().equals("12345678901"))
+        if(!request.getPhoneNum().equals("12345678901")) {
+            sendCode(verificationCode, request.getPhoneNum());
             saveCode(request.getPhoneNum(), verificationCode);
+        }
         return VerificationCodeResponse.builder()
             .code(verificationCode)
             .build();
