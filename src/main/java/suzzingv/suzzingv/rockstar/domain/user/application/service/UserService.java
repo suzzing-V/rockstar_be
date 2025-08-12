@@ -14,70 +14,45 @@ import suzzingv.suzzingv.rockstar.domain.band.domain.entity.BandUser;
 import suzzingv.suzzingv.rockstar.domain.band.infrastructure.BandUserRepository;
 import suzzingv.suzzingv.rockstar.domain.user.domain.entity.User;
 import suzzingv.suzzingv.rockstar.domain.user.domain.entity.UserFcm;
-import suzzingv.suzzingv.rockstar.domain.user.domain.enums.Role;
 import suzzingv.suzzingv.rockstar.domain.user.exception.UserException;
 import suzzingv.suzzingv.rockstar.domain.user.infrastructure.UserFcmRepository;
 import suzzingv.suzzingv.rockstar.domain.user.infrastructure.UserRepository;
-import suzzingv.suzzingv.rockstar.domain.user.presentation.dto.req.CodeRequest;
 import suzzingv.suzzingv.rockstar.domain.user.presentation.dto.req.FcmRequest;
 import suzzingv.suzzingv.rockstar.domain.user.presentation.dto.req.NicknameRequest;
-import suzzingv.suzzingv.rockstar.domain.user.presentation.dto.req.PhoneNumRequest;
-import suzzingv.suzzingv.rockstar.domain.user.presentation.dto.res.*;
-import suzzingv.suzzingv.rockstar.domain.user.util.VerificationCodeGenerator;
-import suzzingv.suzzingv.rockstar.global.redis.RedisService;
+import suzzingv.suzzingv.rockstar.domain.user.presentation.dto.res.UserInfoByBandResponse;
+import suzzingv.suzzingv.rockstar.domain.user.presentation.dto.res.UserInfoResponse;
+import suzzingv.suzzingv.rockstar.domain.user.presentation.dto.res.UserUpdateResponse;
 import suzzingv.suzzingv.rockstar.global.response.properties.ErrorCode;
-import suzzingv.suzzingv.rockstar.global.security.jwt.service.JwtService;
-import suzzingv.suzzingv.rockstar.global.sms.MessageUtils;
-import suzzingv.suzzingv.rockstar.global.sms.SmsSender;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.Optional;
 
+/**
+ * [Service] 사용자 정보 관리 로직을 담당하는 서비스
+ * SRP(단일 책임 원칙)에 따라 인증 관련 기능은 AuthService로 분리되었습니다.
+ * 이 서비스는 사용자 정보 조회, 수정, 탈퇴 등의 책임을 가집니다.
+ */
 @Service
 @RequiredArgsConstructor
 @Transactional
 @Slf4j
 public class UserService {
 
+    // AuthService로 책임이 이전된 의존성(SmsSender, RedisService, JwtService)은 제거되었습니다.
     private final UserRepository userRepository;
     private final BandService bandService;
-    private final SmsSender smsSender;
-    private final RedisService redisService;
-    private final JwtService jwtService;
     private final BandUserRepository bandUserRepository;
     private final UserFcmRepository  userFcmRepository;
 
-    private static final String VERIFICATION_PREFIX = "verify_";
-    private static final Duration VERIFICATION_DURATION = Duration.ofMinutes(1);
-
-    public VerificationCodeResponse sendVerificationCode(PhoneNumRequest request) {
-        checkUserByNew(request);
-        String verificationCode = VerificationCodeGenerator.getCode();
-        if(!request.getPhoneNum().equals("12345678901")) {
-            sendCode(verificationCode, request.getPhoneNum());
-            saveCode(request.getPhoneNum(), verificationCode);
-        }
-        return VerificationCodeResponse.builder()
-            .code(verificationCode)
-            .build();
-    }
-
-    public LoginResponse login(CodeRequest request) {
-        isCorrectCode(request.getPhoneNum(), request.getCode());
-        String accessToken = jwtService.createAccessToken(request.getPhoneNum());
-        String refreshToken = jwtService.createRefreshToken();
-        jwtService.updateRefreshToken(refreshToken, request.getPhoneNum());
-        User user = getUserByIsNew(request);
-
-        return LoginResponse.of(accessToken, refreshToken, user.getId(), user.getNickName());
-    }
-
+    /**
+     * 사용자의 닉네임을 변경합니다.
+     * @param userId 사용자 ID
+     * @param request 변경할 닉네임
+     * @return 업데이트된 사용자 정보
+     */
     public UserUpdateResponse updateNickname(Long userId, NicknameRequest request) {
+        // 닉네임 중복 검사 로직은 그대로 유지합니다.
         checkNicknameDuplication(request);
-        log.info("중복확인");
         User user = findUserById(userId);
-        log.info(user.getPhoneNum());
         user.changeNickname(request.getNickname());
         return UserUpdateResponse.builder()
             .userId(user.getId())
@@ -91,92 +66,32 @@ public class UserService {
             });
     }
 
+    /**
+     * ID로 사용자를 조회합니다.
+     * @param userId 사용자 ID
+     * @return 조회된 User 엔티티
+     */
     public User findUserById(Long userId) {
         return userRepository.findById(userId)
             .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
     }
 
-    private User getUserByIsNew(CodeRequest request) {
-        if (request.getIsNew()) {
-            User user = User.builder()
-                .phoneNum(request.getPhoneNum())
-                .role(Role.USER)
-                .build();
-            User save = userRepository.save(user);
-
-            UserFcm userFcm = UserFcm.builder()
-                    .userId(save.getId())
-                    .build();
-            userFcmRepository.save(userFcm);
-
-            return save;
-        } else {
-            return getByPhoneNum(request);
-        }
-    }
-
-    private User getByPhoneNum(CodeRequest request) {
-        return findByPhoneNum(request.getPhoneNum());
-    }
-
-    private User findByPhoneNum(String phoneNum) {
-        return userRepository.findByPhoneNum(phoneNum)
-            .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
-    }
-
-    private void checkNewUser(String phoneNum) {
-        Optional<User> user = userRepository.findByPhoneNum(phoneNum);
-        if (user.isPresent()) {
-            throw new UserException(ErrorCode.USER_ALREADY_EXISTS);
-        }
-    }
-
-    private void checkUserByNew(PhoneNumRequest request) {
-        if (request.getIsNew()) {
-            checkNewUser(request.getPhoneNum());
-        } else {
-            findByPhoneNum(request.getPhoneNum());
-        }
-    }
-
-    private void isCorrectCode(String phoneNum, String code) {
-        String savedCode = redisService.getStrValue(VERIFICATION_PREFIX + phoneNum);
-        if (!code.equals(savedCode)) {
-            throw new UserException(ErrorCode.VERIFICATION_CODE_INCORRECT);
-        }
-    }
-
-    private void saveCode(String phoneNum, String verificationCode) {
-        redisService.setValue(VERIFICATION_PREFIX + phoneNum, verificationCode,
-            VERIFICATION_DURATION);
-    }
-
-    private String sendCode(String verificationCode, String phoneNum) {
-        String message = MessageUtils.generateVerificationText(verificationCode);
-        try {
-            smsSender.sendMessage(phoneNum, message);
-        } catch (Exception e) {
-            throw new UserException(ErrorCode.SMS_SEND_ERROR);
-        }
-        return verificationCode;
-    }
-
+    /**
+     * 사용자 정보를 조회합니다.
+     * @param userId 사용자 ID
+     * @return 사용자 정보 DTO
+     */
     public UserInfoResponse getUserInfo(Long userId) {
         User user = findUserById(userId);
-
         return UserInfoResponse.from(user);
     }
 
-    public TokenResponse reissueToken(String refreshToken) {
-        String phoneNum = jwtService.checkRefreshToken(refreshToken);
-
-        String newAccessToken = jwtService.createAccessToken(phoneNum);
-        String newRefreshToken = jwtService.reissueRefreshToken(refreshToken, phoneNum);
-
-        return TokenResponse.of(newAccessToken, newRefreshToken);
-        // accessToken 만료 -> refreshToken 보내 토큰 재발급 -> refreshToken도 만료됐으면 다시 로그인해야됨
-    }
-
+    /**
+     * 특정 밴드 내에서의 사용자 정보를 조회합니다.
+     * @param userId 사용자 ID
+     * @param bandId 밴드 ID
+     * @return 밴드 내 사용자 정보 DTO
+     */
     public UserInfoByBandResponse getUserInfoByBand(Long userId, Long bandId) {
         Band band = bandService.findById(bandId);
         User user = findUserById(userId);
@@ -185,6 +100,13 @@ public class UserService {
         return UserInfoByBandResponse.of(user, isManager);
     }
 
+    /**
+     * 특정 밴드에 속한 사용자 목록을 페이징하여 조회합니다.
+     * @param bandId 밴드 ID
+     * @param page 페이지 번호
+     * @param size 페이지 크기
+     * @return 페이징된 밴드 내 사용자 정보
+     */
     public Page<UserInfoByBandResponse> getUsersByBand(Long bandId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "userId"));
         Page<BandUser> bandUsers = bandUserRepository.findByBandId(bandId, pageable);
@@ -197,17 +119,27 @@ public class UserService {
         });
     }
 
+    /**
+     * 회원 탈퇴를 처리합니다. (Soft Delete)
+     * @param userId 탈퇴할 사용자 ID
+     */
     public void withdraw(Long userId) {
         // TODO: 일정 기간 지나면 배치로 하드 삭제
         User user = findUserById(userId);
         user.changeDeletedAt(LocalDateTime.now());
 
+        // 사용자가 속한 밴드 정보 및 초대 정보 등을 정리합니다.
         bandUserRepository.deleteByUserId(userId);
         bandService.delegateManagerOfUserId(userId);
-
         bandService.deleteEntryByUserId(userId);
     }
 
+    /**
+     * FCM 토큰을 업데이트합니다.
+     * @param userId 사용자 ID
+     * @param request 새로운 FCM 토큰
+     * @return 업데이트된 사용자 정보
+     */
     public UserUpdateResponse updateFcmToken(Long userId, FcmRequest request) {
         UserFcm userFcm = getUserFcm(userId);
         userFcm.changeFcmToken(request.getFcmToken());
@@ -218,21 +150,12 @@ public class UserService {
     }
 
     public UserFcm getUserFcm(Long userId) {
-        UserFcm userFcm = userFcmRepository.findByUserId(userId).orElse(null);
-
-        if (userFcm != null) {
-            log.info(String.valueOf(userFcm));
-        } else {
-            log.warn("UserFcm not found for userId: " + userId);
-        }
-
-        return userFcm;
+        return userFcmRepository.findByUserId(userId)
+                .orElseThrow(() -> new UserException(ErrorCode.USER_FCM_NOT_FOUND));
     }
 
     public User findByNickname(String nickname) {
-        User user = userRepository.findByNickName(nickname)
-                .orElseThrow(() -> new UserException(ErrorCode.NICKNAME_DUPLICATION));
-
-        return user;
+        return userRepository.findByNickName(nickname)
+                .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
     }
 }

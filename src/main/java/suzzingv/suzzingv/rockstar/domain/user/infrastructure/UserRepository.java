@@ -4,9 +4,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import suzzingv.suzzingv.rockstar.domain.user.domain.entity.User;
+import suzzingv.suzzingv.rockstar.global.db.DBMarkers.MainRepository;
 
 import java.util.Optional;
 
+@MainRepository
 public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("SELECT u FROM User u WHERE u.id = :id AND u.deletedAt IS NULL")

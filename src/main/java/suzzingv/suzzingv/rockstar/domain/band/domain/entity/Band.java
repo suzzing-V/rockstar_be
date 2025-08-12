@@ -6,9 +6,13 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
+import suzzingv.suzzingv.rockstar.global.db.DBMarkers;
 
 import java.time.LocalDateTime;
 
+import static suzzingv.suzzingv.rockstar.global.db.DBMarkers.*;
+
+@MainEntity
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter

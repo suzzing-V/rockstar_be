@@ -5,7 +5,9 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import suzzingv.suzzingv.rockstar.global.db.DBMarkers.MainEntity;
 
+@MainEntity
 @Entity
 @Table(name = "user_fcm_TB")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

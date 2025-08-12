@@ -5,7 +5,10 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import suzzingv.suzzingv.rockstar.global.db.DBMarkers;
+import suzzingv.suzzingv.rockstar.global.db.DBMarkers.MainEntity;
 
+@MainEntity
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "band_user_TB")
