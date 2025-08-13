@@ -11,13 +11,11 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import suzzingv.suzzingv.rockstar.domain.user.domain.enums.Role;
-import suzzingv.suzzingv.rockstar.global.db.DBMarkers.MainEntity;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
-@MainEntity
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter

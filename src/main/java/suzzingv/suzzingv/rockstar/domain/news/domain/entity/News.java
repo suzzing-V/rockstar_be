@@ -7,11 +7,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import suzzingv.suzzingv.rockstar.domain.news.domain.enums.NewsType;
-import suzzingv.suzzingv.rockstar.global.db.DBMarkers.MainEntity;
 
 import java.time.LocalDateTime;
 
-@MainEntity
 @Entity
 @Table(name = "news_TB")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

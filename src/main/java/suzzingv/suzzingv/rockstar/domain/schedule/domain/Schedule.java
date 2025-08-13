@@ -5,11 +5,9 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import suzzingv.suzzingv.rockstar.global.db.DBMarkers.MainEntity;
 
 import java.time.LocalDateTime;
 
-@MainEntity
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "schedule_TB")

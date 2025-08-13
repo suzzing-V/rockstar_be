@@ -61,6 +61,7 @@ dependencies {
     implementation 'com.fasterxml.jackson.core:jackson-core:2.16.1'
     //postgreSQL
     runtimeOnly 'org.postgresql:postgresql'
+    implementation 'io.hypersistence:hypersistence-utils-hibernate-63:3.7.4'
 }
 
 tasks.named('test') {
