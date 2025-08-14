@@ -12,7 +12,7 @@ public interface UnavailableBlockRepository extends JpaRepository<UnavailableBlo
 
     @Modifying
     @Query(value = """
-        DELETE FROM unavailable_block
+        DELETE FROM unavailable_block_tb
         WHERE user_id = :userId
           AND period && tstzrange(:dayStart, :dayEnd, '[)')
         """, nativeQuery = true)
