@@ -10,10 +10,12 @@ import suzzingv.suzzingv.rockstar.domain.availability.domain.vo.TimeRange;
 import suzzingv.suzzingv.rockstar.domain.availability.instructure.DayUnavailabilityRepository;
 import suzzingv.suzzingv.rockstar.domain.availability.instructure.UnavailableBlockRepository;
 import suzzingv.suzzingv.rockstar.domain.availability.presentation.dto.req.UnavailabilityRequest;
+import suzzingv.suzzingv.rockstar.domain.availability.presentation.dto.res.DayUnavailabilityResponse;
 import suzzingv.suzzingv.rockstar.domain.availability.presentation.dto.res.UnavailabilityResponse;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.YearMonth;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -77,6 +79,18 @@ public class AvailabilityService {
             unavailableBlockRepository.save(unavailableBlock);
         }
         return false;
+    }
+
+    public List<DayUnavailabilityResponse> getUnavailableDaysByMonth(Long userId, int year, int month) {
+        YearMonth yearMonth = YearMonth.of(year, month);
+        LocalDate startDate = yearMonth.atDay(1);
+        LocalDate endDate = yearMonth.atEndOfMonth();
+        
+        List<DayUnavailability> unavailabilities = dayUnavailabilityRepository.findByUserIdAndDateBetween(userId, startDate, endDate);
+        
+        return unavailabilities.stream()
+                .map(DayUnavailabilityResponse::from)
+                .toList();
     }
 
     private ZonedDateTime toZonedDateTime(LocalDate date, int minutes) {
