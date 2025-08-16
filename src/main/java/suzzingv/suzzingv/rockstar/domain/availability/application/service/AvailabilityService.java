@@ -2,6 +2,8 @@ package suzzingv.suzzingv.rockstar.domain.availability.application.service;
 
 import io.hypersistence.utils.hibernate.type.range.Range;
 import lombok.RequiredArgsConstructor;
+import org.checkerframework.checker.units.qual.Time;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import suzzingv.suzzingv.rockstar.domain.availability.domain.entity.DayUnavailability;
@@ -11,13 +13,14 @@ import suzzingv.suzzingv.rockstar.domain.availability.instructure.DayUnavailabil
 import suzzingv.suzzingv.rockstar.domain.availability.instructure.UnavailableBlockRepository;
 import suzzingv.suzzingv.rockstar.domain.availability.presentation.dto.req.UnavailabilityRequest;
 import suzzingv.suzzingv.rockstar.domain.availability.presentation.dto.res.DayUnavailabilityResponse;
+import suzzingv.suzzingv.rockstar.domain.availability.presentation.dto.res.TimeSlotWithHeadcountResponse;
 import suzzingv.suzzingv.rockstar.domain.availability.presentation.dto.res.UnavailabilityResponse;
+import suzzingv.suzzingv.rockstar.domain.band.application.service.BandService;
+import suzzingv.suzzingv.rockstar.domain.band.domain.entity.BandUser;
+import suzzingv.suzzingv.rockstar.domain.band.infrastructure.BandUserRepository;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.YearMonth;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.*;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -29,7 +32,9 @@ public class AvailabilityService {
 
     private final DayUnavailabilityRepository dayUnavailabilityRepository;
     private final UnavailableBlockRepository unavailableBlockRepository;
+    private final BandUserRepository bandUserRepository;
     private static final ZoneId KST = ZoneId.of("Asia/Seoul");
+    private static final DateTimeFormatter HHMM = DateTimeFormatter.ofPattern("HH:mm");
 
     public UnavailabilityResponse createUnAvailableDay(Long userId, UnavailabilityRequest request) {
         dayUnavailabilityRepository.deleteByUserIdAndDate(userId, request.getDate());
@@ -91,6 +96,40 @@ public class AvailabilityService {
         return unavailabilities.stream()
                 .map(DayUnavailabilityResponse::from)
                 .toList();
+    }
+
+    public List<TimeSlotWithHeadcountResponse> getTimeSlotOfDay(Long bandId, LocalDate dateKst, int durationMin,
+                                                                LocalTime startTime,
+                                                                LocalTime endTime) {
+        List<Long> memberIds = getBandMemberIds(bandId);
+        OffsetDateTime dayStartKst = dateKst.atStartOfDay(KST).toOffsetDateTime();
+
+        return unavailableBlockRepository
+                .findBestSlots(dayStartKst, durationMin, memberIds.size(), memberIds)
+                .stream()
+                .map(p -> {
+                    // Instant -> KST -> LocalTime
+                    LocalTime start = LocalDateTime.ofInstant(p.getSlotStart(), KST).toLocalTime();
+                    LocalTime end   = LocalDateTime.ofInstant(p.getSlotEnd(),   KST).toLocalTime();
+
+                    return TimeSlotWithHeadcountResponse.of(
+                            HHMM.format(start),
+                            HHMM.format(end),
+                            p.getAvailableCount(),
+                            memberIds.size()
+                    );
+                })
+                .filter(dto -> {
+                    LocalTime slotStart = LocalTime.parse(dto.getStartTime(), HHMM);
+                    return !slotStart.isBefore(startTime) && !slotStart.isAfter(endTime);
+                })
+                .toList();
+    }
+
+    @NotNull
+    private List<Long> getBandMemberIds(Long bandId) {
+        return bandUserRepository.findByBandId(bandId)
+                .stream().map(BandUser::getUserId).toList();
     }
 
     private ZonedDateTime toZonedDateTime(LocalDate date, int minutes) {

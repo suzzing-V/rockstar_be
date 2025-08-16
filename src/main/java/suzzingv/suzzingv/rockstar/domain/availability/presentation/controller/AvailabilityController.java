@@ -7,9 +7,12 @@ import org.springframework.web.bind.annotation.*;
 import suzzingv.suzzingv.rockstar.domain.availability.application.service.AvailabilityService;
 import suzzingv.suzzingv.rockstar.domain.availability.presentation.dto.req.UnavailabilityRequest;
 import suzzingv.suzzingv.rockstar.domain.availability.presentation.dto.res.DayUnavailabilityResponse;
+import suzzingv.suzzingv.rockstar.domain.availability.presentation.dto.res.TimeSlotWithHeadcountResponse;
 import suzzingv.suzzingv.rockstar.domain.availability.presentation.dto.res.UnavailabilityResponse;
 import suzzingv.suzzingv.rockstar.domain.user.domain.entity.User;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 @RestController
@@ -31,6 +34,14 @@ public class AvailabilityController {
             @RequestParam int year,
             @RequestParam int month) {
         List<DayUnavailabilityResponse> responses = availabilityService.getUnavailableDaysByMonth(user.getId(), year, month);
+        return ResponseEntity.ok(responses);
+    }
+
+    @GetMapping("/day")
+    public ResponseEntity<List<TimeSlotWithHeadcountResponse>> getTimeSlotOfDay(@RequestParam("bandId") Long bandId, @RequestParam("dateKst") LocalDate dateKst,
+                                                                                @RequestParam("durationMin") int durationMin, @RequestParam LocalTime startTime,   // 예: 09:00
+                                                                                @RequestParam LocalTime endTime ) {
+        List<TimeSlotWithHeadcountResponse> responses = availabilityService.getTimeSlotOfDay(bandId, dateKst, durationMin, startTime, endTime);
         return ResponseEntity.ok(responses);
     }
 }
