@@ -53,7 +53,7 @@ public class AuthService {
 
         // 테스트용 번호가 아닐 경우에만 실제 SMS를 발송하고 Redis에 코드를 저장합니다.
         if(!request.getPhoneNum().equals("12345678901")) {
-//            sendCode(verificationCode, request.getPhoneNum());
+            sendCode(verificationCode, request.getPhoneNum());
             saveCode(request.getPhoneNum(), verificationCode);
         }
         return VerificationCodeResponse.builder()
