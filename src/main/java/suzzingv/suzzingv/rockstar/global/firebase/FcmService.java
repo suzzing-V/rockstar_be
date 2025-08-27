@@ -124,7 +124,7 @@ public class FcmService {
     }
 
     public void sendScheduleRequestPush(Long userId, Band band, ScheduleRequest scheduleRequest) {
-        UserFcm userFcm = userFcmRepository.findByUserId(band.getManagerId()).orElse(null);
+        UserFcm userFcm = userFcmRepository.findByUserId(userId).orElse(null);
 
         if (userFcm == null || userFcm.getFcmToken() == null) {
             log.warn("UserFcm not found for userId: " + userId);
@@ -140,7 +140,7 @@ public class FcmService {
                         .setBody(body)
                         .build())
                 .putData("type", "SCHEDULE_REQUEST")
-                .putData("bandId", String.valueOf(scheduleRequest.getId()))
+                .putData("scheduleRequestId", String.valueOf(scheduleRequest.getId()))
                 .putData("timestamp", String.valueOf(System.currentTimeMillis()))
                 .build();
 
