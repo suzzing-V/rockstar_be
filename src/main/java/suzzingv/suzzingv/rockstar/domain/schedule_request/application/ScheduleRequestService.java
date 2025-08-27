@@ -53,7 +53,7 @@ public class ScheduleRequestService {
                             .build();
                     requestAssigneesRepository.save(scheduleRequestAssignees);
 
-//                    fcmService.sendScheduleRequestPush(userId, band, scheduleRequest);
+                    fcmService.sendScheduleRequestPush(userId, band, scheduleRequest);
                 });
     }
 }
