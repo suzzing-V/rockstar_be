@@ -39,6 +39,7 @@ public enum ErrorCode {
     NOTIFICATION_USER_NOT_FOUND(NOT_FOUND, "존재하지 않는 유저 알림입니다."),
     USER_FCM_NOT_FOUND(NOT_FOUND, "유저의 fcm 토큰 정보가 존재하지 않습니다."),
     SCHEDULE_REQUEST_ASSIGNEES_NOT_FOUND(NOT_FOUND, "일정 갱신 요청의 멤버 정보가 존재하지 않습니다."),
+    SCHEDULE_REQUEST_NOT_FOUND(NOT_FOUND, "일정 갱신 요청이 존재하지 않습니다."),
 
     // 500
     SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "예상치 못한 서버 에러가 발생하였습니다."),

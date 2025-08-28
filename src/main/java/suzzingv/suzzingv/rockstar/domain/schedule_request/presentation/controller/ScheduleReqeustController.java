@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import suzzingv.suzzingv.rockstar.domain.schedule_request.application.ScheduleRequestService;
 import suzzingv.suzzingv.rockstar.domain.schedule_request.presentation.dto.req.ScheduleRequestRequest;
 import suzzingv.suzzingv.rockstar.domain.schedule_request.presentation.dto.res.ScheduleRequestIdResponse;
+import suzzingv.suzzingv.rockstar.domain.schedule_request.presentation.dto.res.ScheduleRequestResponse;
 import suzzingv.suzzingv.rockstar.domain.user.domain.entity.User;
 
 @RestController
@@ -25,6 +26,12 @@ public class ScheduleReqeustController {
     @PatchMapping("/completion/{requestId}")
     public ResponseEntity<ScheduleRequestIdResponse> complete(@AuthenticationPrincipal User user, @PathVariable Long requestId) {
         ScheduleRequestIdResponse response = scheduleRequestService.completeRequest(user.getId(), requestId);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{requestId}")
+    public ResponseEntity<ScheduleRequestResponse> getScheduleRequestInfo(@PathVariable Long requestId) {
+        ScheduleRequestResponse response = scheduleRequestService.getScheduleRequestInfo(requestId);
         return ResponseEntity.ok(response);
     }
 }

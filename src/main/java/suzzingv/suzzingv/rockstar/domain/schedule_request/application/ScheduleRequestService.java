@@ -1,12 +1,11 @@
 package suzzingv.suzzingv.rockstar.domain.schedule_request.application;
 
-import com.google.firebase.internal.FirebaseService;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import suzzingv.suzzingv.rockstar.domain.band.application.service.BandService;
 import suzzingv.suzzingv.rockstar.domain.band.domain.entity.Band;
-import suzzingv.suzzingv.rockstar.domain.band.infrastructure.BandRepository;
 import suzzingv.suzzingv.rockstar.domain.band.infrastructure.BandUserRepository;
 import suzzingv.suzzingv.rockstar.domain.notification.application.NotificationService;
 import suzzingv.suzzingv.rockstar.domain.schedule_request.domain.entity.ScheduleRequest;
@@ -17,8 +16,14 @@ import suzzingv.suzzingv.rockstar.domain.schedule_request.infrastructure.Schedul
 import suzzingv.suzzingv.rockstar.domain.schedule_request.infrastructure.ScheduleRequestRepository;
 import suzzingv.suzzingv.rockstar.domain.schedule_request.presentation.dto.req.ScheduleRequestRequest;
 import suzzingv.suzzingv.rockstar.domain.schedule_request.presentation.dto.res.ScheduleRequestIdResponse;
+import suzzingv.suzzingv.rockstar.domain.schedule_request.presentation.dto.res.ScheduleRequestResponse;
+import suzzingv.suzzingv.rockstar.domain.schedule_request.presentation.dto.res.UserSummaryDto;
+import suzzingv.suzzingv.rockstar.domain.user.application.service.UserService;
+import suzzingv.suzzingv.rockstar.domain.user.domain.entity.User;
 import suzzingv.suzzingv.rockstar.global.firebase.FcmService;
 import suzzingv.suzzingv.rockstar.global.response.properties.ErrorCode;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -31,6 +36,7 @@ public class ScheduleRequestService {
     private final BandService bandService;
     private final FcmService fcmService;
     private final NotificationService notificationService;
+    private final UserService userService;
 
     public ScheduleRequestIdResponse createScheduleRequest(ScheduleRequestRequest request) {
         ScheduleRequest scheduleRequest = ScheduleRequest.builder()
@@ -72,5 +78,32 @@ public class ScheduleRequestService {
         ScheduleRequestAssignees scheduleRequestAssignees = requestAssigneesRepository.findByRequestIdAndUserId(requestId, userId)
                 .orElseThrow(() -> new ScheduleRequestException(ErrorCode.SCHEDULE_REQUEST_ASSIGNEES_NOT_FOUND));
         return scheduleRequestAssignees;
+    }
+
+    public ScheduleRequestResponse getScheduleRequestInfo(Long requestId) {
+        ScheduleRequest scheduleRequest = getScheduleRequestByRequestId(requestId);
+        List<ScheduleRequestAssignees> scheduleRequestAssignees = requestAssigneesRepository.findByRequestId(requestId);
+        int totalCount = scheduleRequestAssignees.size();
+        List<UserSummaryDto> pendingMembers = getPendingMembers(scheduleRequestAssignees);
+        return ScheduleRequestResponse.of(scheduleRequest, totalCount, pendingMembers);
+    }
+
+    @NotNull
+    private List<UserSummaryDto> getPendingMembers(List<ScheduleRequestAssignees> scheduleRequestAssignees) {
+        List<UserSummaryDto> pendingMembers = scheduleRequestAssignees
+                .stream()
+                .filter(scheduleRequestAssignee -> scheduleRequestAssignee.getStatus() == RequestStatus.PENDING)
+                .map(scheduleRequestAssignee -> {
+                    User user = userService.findUserById(scheduleRequestAssignee.getUserId());
+                    return UserSummaryDto.from(user);
+                })
+                .toList();
+        return pendingMembers;
+    }
+
+    private ScheduleRequest getScheduleRequestByRequestId(Long requestId) {
+        ScheduleRequest scheduleRequest = scheduleRequestRepository.findById(requestId)
+                .orElseThrow(() -> new ScheduleRequestException(ErrorCode.SCHEDULE_REQUEST_NOT_FOUND));
+        return scheduleRequest;
     }
 }
