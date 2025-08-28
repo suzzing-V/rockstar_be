@@ -16,6 +16,7 @@ import suzzingv.suzzingv.rockstar.domain.notification.infrastructure.Notificatio
 import suzzingv.suzzingv.rockstar.domain.notification.infrastructure.NotificationUserRepository;
 import suzzingv.suzzingv.rockstar.domain.notification.presentation.dto.res.NotificationUserIdResponse;
 import suzzingv.suzzingv.rockstar.domain.notification.presentation.dto.res.NotificationResponse;
+import suzzingv.suzzingv.rockstar.domain.schedule_request.domain.entity.ScheduleRequest;
 import suzzingv.suzzingv.rockstar.domain.user.domain.entity.User;
 import suzzingv.suzzingv.rockstar.global.response.properties.ErrorCode;
 
@@ -119,6 +120,20 @@ public class NotificationService {
                 .userId(band.getManagerId())
                 .build();
         notificationUserRepository.save(notificationUser);
+    }
+
+    public void createScheduleRequestNotification(Band band, ScheduleRequest scheduleRequest) {
+        String content = "일정을 업데이트 해주세요.";
+
+        Notification notification = Notification.builder()
+                .title(band.getName())
+                .content(content)
+                .contentId(scheduleRequest.getId())
+                .notificationType(NotificationType.SCHEDULE_REQUEST)
+                .build();
+        notificationRepository.save(notification);
+
+        createNotificationOfMembers(band, notification);
     }
 
     @Transactional(readOnly = true)

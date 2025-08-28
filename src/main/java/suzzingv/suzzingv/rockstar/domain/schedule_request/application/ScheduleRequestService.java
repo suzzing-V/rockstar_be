@@ -8,6 +8,7 @@ import suzzingv.suzzingv.rockstar.domain.band.application.service.BandService;
 import suzzingv.suzzingv.rockstar.domain.band.domain.entity.Band;
 import suzzingv.suzzingv.rockstar.domain.band.infrastructure.BandRepository;
 import suzzingv.suzzingv.rockstar.domain.band.infrastructure.BandUserRepository;
+import suzzingv.suzzingv.rockstar.domain.notification.application.NotificationService;
 import suzzingv.suzzingv.rockstar.domain.schedule_request.domain.entity.ScheduleRequest;
 import suzzingv.suzzingv.rockstar.domain.schedule_request.domain.entity.ScheduleRequestAssignees;
 import suzzingv.suzzingv.rockstar.domain.schedule_request.domain.enums.RequestStatus;
@@ -27,6 +28,7 @@ public class ScheduleRequestService {
     private final BandUserRepository bandUserRepository;
     private final BandService bandService;
     private final FcmService fcmService;
+    private final NotificationService notificationService;
 
     public ScheduleRequestIdResponse createScheduleRequest(ScheduleRequestRequest request) {
         ScheduleRequest scheduleRequest = ScheduleRequest.builder()
@@ -38,6 +40,7 @@ public class ScheduleRequestService {
 
         Band band = bandService.findById(request.getBandId());
         createMemberStatus(band, scheduleRequest);
+        notificationService.createScheduleRequestNotification(band, scheduleRequest);
 
         return ScheduleRequestIdResponse.from(scheduleRequest.getId());
     }
