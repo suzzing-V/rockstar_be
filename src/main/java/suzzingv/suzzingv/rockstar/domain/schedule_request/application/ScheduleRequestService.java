@@ -12,11 +12,13 @@ import suzzingv.suzzingv.rockstar.domain.notification.application.NotificationSe
 import suzzingv.suzzingv.rockstar.domain.schedule_request.domain.entity.ScheduleRequest;
 import suzzingv.suzzingv.rockstar.domain.schedule_request.domain.entity.ScheduleRequestAssignees;
 import suzzingv.suzzingv.rockstar.domain.schedule_request.domain.enums.RequestStatus;
+import suzzingv.suzzingv.rockstar.domain.schedule_request.exception.ScheduleRequestException;
 import suzzingv.suzzingv.rockstar.domain.schedule_request.infrastructure.ScheduleRequestAssigneesRepository;
 import suzzingv.suzzingv.rockstar.domain.schedule_request.infrastructure.ScheduleRequestRepository;
 import suzzingv.suzzingv.rockstar.domain.schedule_request.presentation.dto.req.ScheduleRequestRequest;
 import suzzingv.suzzingv.rockstar.domain.schedule_request.presentation.dto.res.ScheduleRequestIdResponse;
 import suzzingv.suzzingv.rockstar.global.firebase.FcmService;
+import suzzingv.suzzingv.rockstar.global.response.properties.ErrorCode;
 
 @Service
 @RequiredArgsConstructor
@@ -58,5 +60,17 @@ public class ScheduleRequestService {
 
                     fcmService.sendScheduleRequestPush(userId, band, scheduleRequest);
                 });
+    }
+
+    public ScheduleRequestIdResponse completeRequest(Long userId, Long requestId) {
+        ScheduleRequestAssignees scheduleRequestAssignees = findScheduleReqeustAssigneesByUserIdAndReqeustId(userId, requestId);
+        scheduleRequestAssignees.completeRequest();
+        return null;
+    }
+
+    private ScheduleRequestAssignees findScheduleReqeustAssigneesByUserIdAndReqeustId(Long userId, Long requestId) {
+        ScheduleRequestAssignees scheduleRequestAssignees = requestAssigneesRepository.findByRequestIdAndUserId(requestId, userId)
+                .orElseThrow(() -> new ScheduleRequestException(ErrorCode.SCHEDULE_REQUEST_ASSIGNEES_NOT_FOUND));
+        return scheduleRequestAssignees;
     }
 }
