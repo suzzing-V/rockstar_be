@@ -11,7 +11,6 @@ import suzzingv.suzzingv.rockstar.domain.band.application.service.BandService;
 import suzzingv.suzzingv.rockstar.domain.band.domain.entity.Band;
 import suzzingv.suzzingv.rockstar.domain.band.infrastructure.BandUserRepository;
 import suzzingv.suzzingv.rockstar.domain.notification.application.NotificationService;
-import suzzingv.suzzingv.rockstar.domain.notification.domain.entity.Notification;
 import suzzingv.suzzingv.rockstar.domain.schedule_request.domain.entity.ScheduleRequest;
 import suzzingv.suzzingv.rockstar.domain.schedule_request.domain.entity.ScheduleRequestAssignees;
 import suzzingv.suzzingv.rockstar.domain.schedule_request.domain.enums.RequestStatus;
@@ -112,10 +111,14 @@ public class ScheduleRequestService {
         return scheduleRequest;
     }
 
-    public Page<ShortScheduleRequestResponse> getScheduleRequestsOfBand(Long bandId, int page, int size) {
+    public Page<ShortScheduleRequestResponse> getScheduleRequestsOfBand(Long userId, Long bandId, int page, int size) {
         PageRequest pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
         Page<ShortScheduleRequestResponse> responses = scheduleRequestRepository.findByBandId(bandId, pageable)
-                .map(ShortScheduleRequestResponse::from);
+                .map(scheduleRequest -> {
+                    ScheduleRequestAssignees assignees = findScheduleReqeustAssigneesByUserIdAndReqeustId(userId, scheduleRequest.getId());
+                    boolean isCompleted = RequestStatus.isCompleted(assignees.getStatus());
+                    return ShortScheduleRequestResponse.of(scheduleRequest, isCompleted);
+                });
         return responses;
     }
 }

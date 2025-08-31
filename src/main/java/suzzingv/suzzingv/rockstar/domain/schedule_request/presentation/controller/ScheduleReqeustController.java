@@ -40,9 +40,9 @@ public class ScheduleReqeustController {
     }
 
     @GetMapping("/band/{bandId}")
-    public ResponseEntity<Page<ShortScheduleRequestResponse>> getScheduleRequestsOfBand(@PathVariable Long bandId, @RequestParam(defaultValue = "0") int page,
+    public ResponseEntity<Page<ShortScheduleRequestResponse>> getScheduleRequestsOfBand(@AuthenticationPrincipal User user, @PathVariable Long bandId, @RequestParam(defaultValue = "0") int page,
                                                                                         @RequestParam(defaultValue = "10") int size) {
-        Page<ShortScheduleRequestResponse> responses = scheduleRequestService.getScheduleRequestsOfBand(bandId, page, size);
+        Page<ShortScheduleRequestResponse> responses = scheduleRequestService.getScheduleRequestsOfBand(user.getId(), bandId, page, size);
         return ResponseEntity.ok(responses);
     }
 }

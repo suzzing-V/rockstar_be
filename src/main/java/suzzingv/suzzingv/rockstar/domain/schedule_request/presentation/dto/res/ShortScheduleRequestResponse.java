@@ -19,12 +19,15 @@ public class ShortScheduleRequestResponse {
 
     private LocalDateTime createdAt;
 
-    public static ShortScheduleRequestResponse from(ScheduleRequest scheduleRequest) {
+    private Boolean isCompleted;
+
+    public static ShortScheduleRequestResponse of(ScheduleRequest scheduleRequest, boolean isCompleted) {
         return ShortScheduleRequestResponse.builder()
                 .requestId(scheduleRequest.getId())
                 .startDate(scheduleRequest.getStartDate())
                 .endDate(scheduleRequest.getEndDate())
                 .createdAt(scheduleRequest.getCreatedAt())
+                .isCompleted(isCompleted)
                 .build();
     }
 }
