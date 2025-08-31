@@ -2,12 +2,16 @@ package suzzingv.suzzingv.rockstar.domain.schedule_request.application;
 
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import suzzingv.suzzingv.rockstar.domain.band.application.service.BandService;
 import suzzingv.suzzingv.rockstar.domain.band.domain.entity.Band;
 import suzzingv.suzzingv.rockstar.domain.band.infrastructure.BandUserRepository;
 import suzzingv.suzzingv.rockstar.domain.notification.application.NotificationService;
+import suzzingv.suzzingv.rockstar.domain.notification.domain.entity.Notification;
 import suzzingv.suzzingv.rockstar.domain.schedule_request.domain.entity.ScheduleRequest;
 import suzzingv.suzzingv.rockstar.domain.schedule_request.domain.entity.ScheduleRequestAssignees;
 import suzzingv.suzzingv.rockstar.domain.schedule_request.domain.enums.RequestStatus;
@@ -17,6 +21,7 @@ import suzzingv.suzzingv.rockstar.domain.schedule_request.infrastructure.Schedul
 import suzzingv.suzzingv.rockstar.domain.schedule_request.presentation.dto.req.ScheduleRequestRequest;
 import suzzingv.suzzingv.rockstar.domain.schedule_request.presentation.dto.res.ScheduleRequestIdResponse;
 import suzzingv.suzzingv.rockstar.domain.schedule_request.presentation.dto.res.ScheduleRequestResponse;
+import suzzingv.suzzingv.rockstar.domain.schedule_request.presentation.dto.res.ShortScheduleRequestResponse;
 import suzzingv.suzzingv.rockstar.domain.schedule_request.presentation.dto.res.UserSummaryDto;
 import suzzingv.suzzingv.rockstar.domain.user.application.service.UserService;
 import suzzingv.suzzingv.rockstar.domain.user.domain.entity.User;
@@ -105,5 +110,12 @@ public class ScheduleRequestService {
         ScheduleRequest scheduleRequest = scheduleRequestRepository.findById(requestId)
                 .orElseThrow(() -> new ScheduleRequestException(ErrorCode.SCHEDULE_REQUEST_NOT_FOUND));
         return scheduleRequest;
+    }
+
+    public Page<ShortScheduleRequestResponse> getScheduleRequestsOfBand(Long bandId, int page, int size) {
+        PageRequest pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        Page<ShortScheduleRequestResponse> responses = scheduleRequestRepository.findByBandId(bandId, pageable)
+                .map(ShortScheduleRequestResponse::from);
+        return responses;
     }
 }

@@ -1,6 +1,7 @@
 package suzzingv.suzzingv.rockstar.domain.schedule_request.presentation.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -8,7 +9,10 @@ import suzzingv.suzzingv.rockstar.domain.schedule_request.application.ScheduleRe
 import suzzingv.suzzingv.rockstar.domain.schedule_request.presentation.dto.req.ScheduleRequestRequest;
 import suzzingv.suzzingv.rockstar.domain.schedule_request.presentation.dto.res.ScheduleRequestIdResponse;
 import suzzingv.suzzingv.rockstar.domain.schedule_request.presentation.dto.res.ScheduleRequestResponse;
+import suzzingv.suzzingv.rockstar.domain.schedule_request.presentation.dto.res.ShortScheduleRequestResponse;
 import suzzingv.suzzingv.rockstar.domain.user.domain.entity.User;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/schedule-request")
@@ -33,5 +37,12 @@ public class ScheduleReqeustController {
     public ResponseEntity<ScheduleRequestResponse> getScheduleRequestInfo(@PathVariable Long requestId) {
         ScheduleRequestResponse response = scheduleRequestService.getScheduleRequestInfo(requestId);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/band/{bandId}")
+    public ResponseEntity<Page<ShortScheduleRequestResponse>> getScheduleRequestsOfBand(@PathVariable Long bandId, @RequestParam(defaultValue = "0") int page,
+                                                                                        @RequestParam(defaultValue = "10") int size) {
+        Page<ShortScheduleRequestResponse> responses = scheduleRequestService.getScheduleRequestsOfBand(bandId, page, size);
+        return ResponseEntity.ok(responses);
     }
 }
