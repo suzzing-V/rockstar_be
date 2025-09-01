@@ -7,6 +7,8 @@ import suzzingv.suzzingv.rockstar.domain.schedule_request.domain.entity.Schedule
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import static suzzingv.suzzingv.rockstar.global.util.DateUtil.toMMDDHHMM;
+
 @Builder
 @Getter
 public class ShortScheduleRequestResponse {
@@ -17,7 +19,7 @@ public class ShortScheduleRequestResponse {
 
     private LocalDate endDate;
 
-    private LocalDateTime createdAt;
+    private String createdAt;
 
     private Boolean isCompleted;
 
@@ -26,7 +28,7 @@ public class ShortScheduleRequestResponse {
                 .requestId(scheduleRequest.getId())
                 .startDate(scheduleRequest.getStartDate())
                 .endDate(scheduleRequest.getEndDate())
-                .createdAt(scheduleRequest.getCreatedAt())
+                .createdAt(toMMDDHHMM(scheduleRequest.getCreatedAt()))
                 .isCompleted(isCompleted)
                 .build();
     }
