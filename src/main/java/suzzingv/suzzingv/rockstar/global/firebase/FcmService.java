@@ -23,7 +23,6 @@ public class FcmService {
 
     @Async
     public void sendScheduleInfoPush(String fcmToken, String title, String body, Long bandId, Long scheduleId) {
-        log.info("📨 [ASYNC] sendScheduleInfoPush 실행 - Thread: {}", Thread.currentThread().getName());
         if (fcmToken == null || fcmToken.isEmpty()) return;
 
         Message message = Message.builder()
