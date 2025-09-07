@@ -6,6 +6,7 @@ import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import suzzingv.suzzingv.rockstar.domain.band.domain.entity.Band;
 import suzzingv.suzzingv.rockstar.domain.schedule_request.domain.entity.ScheduleRequest;
@@ -20,7 +21,9 @@ public class FcmService {
 
     private final UserFcmRepository userFcmRepository;
 
+    @Async
     public void sendScheduleInfoPush(String fcmToken, String title, String body, Long bandId, Long scheduleId) {
+        log.info("📨 [ASYNC] sendScheduleInfoPush 실행 - Thread: {}", Thread.currentThread().getName());
         if (fcmToken == null || fcmToken.isEmpty()) return;
 
         Message message = Message.builder()
@@ -43,6 +46,7 @@ public class FcmService {
         }
     }
 
+    @Async
     public void sendScheduleListPush(String fcmToken, String title, String body, Long bandId) {
         if (fcmToken == null || fcmToken.isEmpty()) return;
 
@@ -65,6 +69,7 @@ public class FcmService {
         }
     }
 
+    @Async
     public void sendInvitationPush(String title, Band band, Long userId) {
         UserFcm userFcm = userFcmRepository.findByUserId(userId).orElse(null);
 
@@ -94,6 +99,7 @@ public class FcmService {
         }
     }
 
+    @Async
     public void sendInvitationAcceptPush(User user, Band band) {
         UserFcm userFcm = userFcmRepository.findByUserId(band.getManagerId()).orElse(null);
 
@@ -123,6 +129,7 @@ public class FcmService {
         }
     }
 
+    @Async
     public void sendScheduleRequestPush(Long userId, Band band, ScheduleRequest scheduleRequest) {
         UserFcm userFcm = userFcmRepository.findByUserId(userId).orElse(null);
 
